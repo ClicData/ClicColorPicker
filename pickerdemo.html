@@ -1,0 +1,35 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="ClicColorPicker.css"></link>		
+		<link rel="stylesheet" type="text/css" href="nouislider/nouislider.css"></link>		
+	</head>
+	<body>
+		<p><input id="simple" type="button" value="you'll never see this" /></p>
+		<p><input id="full" type="button" value="you'll never see this" /></p>
+		<script src="jquery-2.0.0.min.js"></script>
+
+		<!-- Jquery UI Slider stuff... -->
+		<script src="jquery-ui.js"></script>
+
+		<script src="nouislider/jquery.nouislider.js"></script>
+		<script src="ColorMethods.js"></script>
+		<script src="ColorTextBox.js"></script>
+		<script src="ClicFullColorPicker.js"></script>
+		<script src="ClicSimplePicker.js"></script>
+		<script src="ClicColorPicker.js"></script>
+		
+
+		<script>
+			$(document).ready(function () {
+				$('#simple').ClicColorPicker({
+					'startColor':"#c4c4c4",
+					'onChanged': function (e) {
+						alert(e.oldValue + " has changed to " + e.newValue);
+					}
+				});
+				$('#full').ClicColorPicker({'startColor':"rgb(196, 16, 196)", 'type':'full',enableOpacity:true});
+			});
+		</script>
+	
+	</body>
+</html>
