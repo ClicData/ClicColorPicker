@@ -8,6 +8,7 @@ An HTML5 color picker with some awesome features
 * Text entry of rgb(a) and hex values 
 * Gradient picking is coming soon....
 
+[See a demo here](http://s3-us-west-2.amazonaws.com/cliccolorpicker/pickerdemo.html)
 
 To get started, make sure your page has the required files.
 ```html
