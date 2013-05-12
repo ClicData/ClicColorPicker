@@ -140,15 +140,17 @@
 		app.ui.colorTextBox.ColorTextBox('setValue',rgb);		
 
 		app.ui.hueSlider.val(app.state.selectedHue);
-		app.ui.opacitySlider.val(app.state.selectedOpacity);
+		if (app.ui.opacitySlider) {
+			app.ui.opacitySlider.val(app.state.selectedOpacity);	
 
-		var solid = CloneColor(rgb);
-		solid.a = 255;
+			var solid = CloneColor(rgb);		
+			var transparent = CloneColor(rgb);
+			solid.a = 255;
+			transparent.a = 0
 
-		var transparent = CloneColor(rgb);
-		transparent.a = 0
-
-		app.ui.opacitySlider.css('background',"linear-gradient(90deg," + ObjectToRGBAString(transparent) + "," + ObjectToRGBAString(solid) + ") , url('images/transparent.png') repeat");		
+			app.ui.opacitySlider.css('background',"linear-gradient(90deg," + ObjectToRGBAString(transparent) + "," + ObjectToRGBAString(solid) + ") , url('images/transparent.png') repeat");		
+		}
+		
 		
 		var lightness;
 		var empty;
