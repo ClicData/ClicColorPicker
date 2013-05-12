@@ -6,7 +6,13 @@
 
 	
 	function getSelectedColor(app) {
-		return HSLToRGB(app.state.selectedHue,app.state.selectedSaturation,app.state.selectedLightness);
+		var rv = HSLToRGB(app.state.selectedHue,app.state.selectedSaturation,app.state.selectedLightness);
+		if (app.settings.enableOpacity) {
+			rv.a = app.state.selectedOpacity;
+		} else {
+			rv.a = 255;
+		}
+		return rv;	
 	}
 
 	function drawCommandRow(app) {
@@ -53,8 +59,26 @@
 	function drawPicker(app) {
 		var fullArea = $('<div class="fullArea"></div>');
 
-		app.ui.satAndLightness = $('<div class="satAndLightness"/>');
-		app.ui.satAndLightness.appendTo(fullArea);
+		var satAndLightness = $('<div class="satAndLightnessArea"></div>');
+		for (var i = 0; i<100; i++) {
+			app.ui.lightnessLines[i] = $('<div class="lightnessLine"/>');
+			app.ui.lightnessLines[i].data("lightness",100-i);
+			app.ui.lightnessLines[i].appendTo(satAndLightness);
+			app.ui.lightnessLines[i].click(function () {
+				app.state.selectedLightness = $(this).data("lightness");
+			});
+		}
+
+		satAndLightness.click(function (e) {
+			var absX = $(this).offset().left;
+			var relX = e.pageX - absX;
+			var width = $(this).width();
+			
+			app.state.selectedSaturation = (100-(relX/width)*100);
+			UpdateUI(app);
+		});
+
+		satAndLightness.appendTo(fullArea);
 		drawHueSlider(app,fullArea);
 
 		if (app.settings.enableOpacity) {
@@ -113,10 +137,7 @@
 	//methods
 	function UpdateUI(app) {
 		var rgb = getSelectedColor(app);
-		app.ui.colorTextBox.ColorTextBox('setValue',rgb);
-		if (app.settings.enableOpacity) {
-			app.ui.colorTextBox.ColorTextBox('setOpacity',app.state.selectedOpacity);
-		}
+		app.ui.colorTextBox.ColorTextBox('setValue',rgb);		
 
 		app.ui.hueSlider.val(app.state.selectedHue);
 		app.ui.opacitySlider.val(app.state.selectedOpacity);
@@ -128,12 +149,25 @@
 		transparent.a = 0
 
 		app.ui.opacitySlider.css('background',"linear-gradient(90deg," + ObjectToRGBAString(transparent) + "," + ObjectToRGBAString(solid) + ") , url('images/transparent.png') repeat");		
-
-		var empty =  HSLToRGB(app.state.selectedHue,0,0);
-		var avg = HSLToRGB(app.state.selectedHue,50,50);
-		var full = HSLToRGB(app.state.selectedHue,99,99);
 		
-		app.ui.satAndLightness.css('background',"linear-gradient(0deg," + ObjectToRGBString(avg) + "," + ObjectToRGBAString(full) + ") , linear-gradient(90deg," + ObjectToRGBString(avg) + "," + ObjectToRGBAString(empty) + ")  repeat");		
+		var lightness;
+		var empty;
+		var mid;
+		var full;
+		for (var i = 0; i<app.ui.lightnessLines.length; i++) {
+			lightness = app.ui.lightnessLines[i].data('lightness');
+			empty = HSLToRGB(app.state.selectedHue,0 ,lightness); 
+			mid =  HSLToRGB(app.state.selectedHue,50 ,lightness); 
+			full = HSLToRGB(app.state.selectedHue,100,lightness);			
+			app.ui.lightnessLines[i].css('background',"linear-gradient(90deg," + 
+				ObjectToRGBString(full) + "0%," + 
+				ObjectToRGBString(mid) + "50%," + 
+				ObjectToRGBAString(empty) + "100%) repeat");			
+
+		}
+
+		
+		
 	}
 
 
@@ -176,7 +210,7 @@
 					mainPanel:$(control),
 					colorTextBox:null,
 					fullPicker:null,
-					satAndLightness:null,
+					lightnessLines: new Array(100),					
 					hueSlider:null
 				}
    			});

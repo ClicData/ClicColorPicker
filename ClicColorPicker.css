@@ -181,11 +181,20 @@ margin-left: 10px;
 	box-shadow: none;
 }
 
-.satAndLightness {
+.lightnessLine {
 	width:227px;
-	height:200px;
-	margin-left: 10;
+	height: 2px;		
 }
+
+.satAndLightnessArea {
+	margin-right: 13px;
+	margin-left: 10px;
+	border: 1px solid 9d9d9d;
+	overflow: hidden;
+	cursor:crosshair;
+}
+
+
 
 .unselectable {
   -webkit-touch-callout: none;

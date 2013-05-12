@@ -52,14 +52,14 @@
 	function UpdateUI(app) {	
 		var str;
 		if (app.settings.enableOpacity) {
-			str = ObjectToRGBAString(app.state.selectedColor);
+			str = ObjectToRGBAString(app.state.selectedColor);			
 		} else {
 			str = ObjectToRGBString(app.state.selectedColor);
+			
 		}
 
-		app.ui.previewArea.css("background-color",str);
+		app.ui.previewArea.css('background',str);
 		app.ui.textBox.val(str);
-		
 	}
 
 
@@ -99,14 +99,7 @@
     	return app;
 	}
 
-	var methods = {
-		setOpacity:function (newVal) {
-			return this.each(function () {
-            	var app = getApp(this);
-            	app.state.selectedColor.a = newVal	;            	
-            	UpdateUI(app);
-            });
-		},
+	var methods = {		
 		setValue:function (newVal) {
 			return this.each(function () {
             	var app = getApp(this); 
