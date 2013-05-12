@@ -7,7 +7,8 @@
 		<p><input id="simple" type="button" value="you'll never see this" /></p>
 		<p><input id="full" type="button" value="you'll never see this" /></p>
 		<script src="jquery-2.0.0.min.js"></script>		
-		<script src="jquery-ui.js"></script>
+		
+		<p id="val" />
 
 		<!--
 		All of this has been minified into ClicColorPicker-min.js
@@ -26,6 +27,7 @@
 				$('#simple').ClicColorPicker({
 					'startColor':"#c4c4c4",
 					'onChanged': function (e) {
+						val
 						alert(e.oldValue + " has changed to " + e.newValue);
 					}
 				});
