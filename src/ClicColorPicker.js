@@ -1,4 +1,5 @@
 (function( $ ){
+	var _us = [];
 	function Init(element,app) {
 		// draw ui
 		drawOpener(element,app);
@@ -89,6 +90,13 @@
 
 	// event handlers
 	function OpenerClick(e,app) {
+		for (var i = 0; i< _us.length;i++) {
+			if (_us[i] != app){
+				_us[i].state.mainPanelVisible = false;
+				UpdateUI(_us[i]);
+			}
+		};
+
 		app.state.mainPanelVisible = !app.state.mainPanelVisible;
 		UpdateUI(app);
 
@@ -157,6 +165,7 @@
 						}
            			});
 					app = $(this).data('ClicColorPicker');
+					_us.push(app);
            			Init(this,app);
             	}
 

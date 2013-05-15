@@ -10,7 +10,7 @@
 		if (app.settings.enableOpacity) {
 			rv.a = app.state.selectedOpacity;
 		} else {
-			rv.a = 255;
+			rv.a = 1;
 		}
 		return rv;	
 	}
@@ -66,17 +66,31 @@
 			app.ui.lightnessLines[i].appendTo(satAndLightness);
 			app.ui.lightnessLines[i].click(function () {
 				app.state.selectedLightness = $(this).data("lightness");
+			}).mousedown(function (e) {
+				app.state.selectedLightness = $(this).data("lightness");
+			}).mousemove(function (e) {
+				if (app.state.mouseIsDown) {
+					app.state.selectedLightness = $(this).data("lightness");
+				}
 			});
 		}
 
 		satAndLightness.click(function (e) {
-			var absX = $(this).offset().left;
-			var relX = e.pageX - absX;
-			var width = $(this).width();
-			
-			app.state.selectedSaturation = (100-(relX/width)*100);
-			UpdateUI(app);
+			ChangeSatAndLightness(e, app,satAndLightness);			
+		}).mousedown(function (e) {
+			app.state.mouseIsDown = true;
+			ChangeSatAndLightness(e, app,satAndLightness);			
+		}).mousemove(function (e) {
+			if (app.state.mouseIsDown) {
+				ChangeSatAndLightness(e, app,satAndLightness);
+			}
 		});
+
+		app.ui.crosshair = $('<img src="images/crosshair.png" style="position:relative;" />');
+		app.ui.crosshair.appendTo(satAndLightness);
+		$(document).mouseup(function (e) {
+			app.state.mouseIsDown = false;
+		})
 
 		satAndLightness.appendTo(fullArea);
 		drawHueSlider(app,fullArea);
@@ -88,11 +102,21 @@
 		fullArea.appendTo(app.ui.fullPicker);		
 	}
 
+	function ChangeSatAndLightness(e,app,satAndLightness) {
+		var absX = satAndLightness.offset().left;
+		var relX = e.pageX - absX;
+		var width = satAndLightness.width();
+		
+		app.state.selectedSaturation = (100-(relX/width)*100);
+		UpdateUI(app);
+		e.preventDefault();
+	}
+
 	function drawOpacitySlider(app,fullArea) {
 		app.ui.opacitySlider = $('<div class="noUiSlider"></div>').noUiSlider({
-			range: [0, 255]
-			,start: 255
-		   	,step: 1
+			range: [0, 1]
+			,start: 1
+		   	,step: .01
 		   	,handles:1
 		   	,slide: function(){
 		   		app.state.selectedOpacity = $(this).val();
@@ -106,6 +130,17 @@
 	}
 
 	function drawHueSlider(app,fullArea) {
+
+		var hueGradient = [
+			{percent:0,color:ParseHex("#ff0000")},
+			{percent:17,color:ParseHex("#ffff00")},
+			{percent:33,color:ParseHex("#00ff00")},
+			{percent:50,color:ParseHex("#00ffff")},
+			{percent:67,color:ParseHex("#0000ff")},
+			{percent:83,color:ParseHex("#ff00ff")},
+			{percent:100,color:ParseHex("#ff0000")},
+		];
+		
 		app.ui.hueSlider = $('<div class="noUiSlider"></div>').noUiSlider({
 			range: [0, 360]
 			,start: app.state.selectedHue
@@ -116,9 +151,8 @@
 		    	UpdateUI(app);
 		   	}
 		});		
-		
-		app.ui.hueSlider.css('background', 'linear-gradient(90deg, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)');
-		
+
+		ApplyGradientBackground(app.ui.hueSlider,90,hueGradient)
 
 		var sliderContainer = $('<div></div>');
 		app.ui.hueSlider.appendTo(sliderContainer);
@@ -145,13 +179,21 @@
 
 			var solid = CloneColor(rgb);		
 			var transparent = CloneColor(rgb);
-			solid.a = 255;
+			solid.a = 1;
 			transparent.a = 0
 
 			app.ui.opacitySlider.css('background',"linear-gradient(90deg," + ObjectToRGBAString(transparent) + "," + ObjectToRGBAString(solid) + ") , url('images/transparent.png') repeat");		
 		}
 		
+		var offset = 6;
+		offset += app.state.selectedLightness*2;
+		app.ui.crosshair.css('top', -offset);
 		
+		offset = -8;
+		var width = app.ui.crosshair.parent().width();
+		var left = width - (app.state.selectedSaturation * (width/100)) + offset;
+		app.ui.crosshair.css('left', left);
+
 		var lightness;
 		var empty;
 		var mid;
@@ -160,16 +202,16 @@
 			lightness = app.ui.lightnessLines[i].data('lightness');
 			empty = HSLToRGB(app.state.selectedHue,0 ,lightness); 
 			mid =  HSLToRGB(app.state.selectedHue,50 ,lightness); 
-			full = HSLToRGB(app.state.selectedHue,100,lightness);			
-			app.ui.lightnessLines[i].css('background',"linear-gradient(90deg," + 
-				ObjectToRGBString(full) + "0%," + 
-				ObjectToRGBString(mid) + "50%," + 
-				ObjectToRGBAString(empty) + "100%) repeat");			
+			full = HSLToRGB(app.state.selectedHue,100,lightness);
 
-		}
+			var gradients = [
+				{percent:0,color:full},
+				{percent:50,color:mid},
+				{percent:100,color:empty}
+			];
 
-		
-		
+			ApplyGradientBackground(app.ui.lightnessLines[i],90,gradients)
+		}	
 	}
 
 
@@ -183,7 +225,7 @@
 		return $.extend( {
         	startColor:'#FFFFFF',
         	enableOpacity:false,
-        	opacity:255,
+        	opacity:1,
             mainPanelCssClass:"",
             applyClick:null,
             cancelClick:null,
@@ -206,14 +248,16 @@
 					selectedHue:hsl.h,
 					selectedSaturation:hsl.s,
 					selectedLightness:hsl.l,
-					selectedOpacity:settings.opacity
+					selectedOpacity:settings.opacity,
+					mouseIsDown:false
 				},
 				ui: {
 					mainPanel:$(control),
 					colorTextBox:null,
 					fullPicker:null,
 					lightnessLines: new Array(100),					
-					hueSlider:null
+					hueSlider:null,
+					crosshair:null
 				}
    			});
 

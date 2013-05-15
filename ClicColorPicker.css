@@ -53,27 +53,41 @@
 
 .colorTBInput {
 	border-top: 1px solid #9d9d9d;
-border-bottom: 1px solid #9d9d9d;
-border-right: 1px solid #9d9d9d;
-width: 165px;
-height: 42px;
-top: -17;
-position: relative;
-border-left: 0px;
-padding:0px;
+	border-bottom: 1px solid #9d9d9d;
+	border-left: 0px;
+	border-right: 1px solid #9d9d9d;
+
+	width: 165px;
+	height: 42px;
+	
+	padding:0px;
+	position: relative;
+	top: -42;
+	left: 62;
+	
 }
 
 .colorTBPreview {
 	display: inline-block;
 	width: 60px;
 	height: 40px;
-	border: 1px solid #9d9d9d;
+	border: 1px solid #9d9d9d;	
 	position: relative;
-	top: -1;	
+	left: -61px;
 }
 
 .colorTBParent {
-	margin: 10px 10px 0px 10px
+	margin: 10px 10px 0px 10px;
+	max-height: 40px;
+	overflow: hidden;
+	border-left: 1px solid #9d9d9d;	
+}
+
+.colorTBBackground {
+	background: url(images/transparent.png) repeat;	
+	display: inline-block;
+	width: 60px;
+	height: 40px;
 }
 
 .smallPreview
@@ -189,6 +203,7 @@ margin-left: 10px;
 .satAndLightnessArea {
 	margin-right: 13px;
 	margin-left: 10px;
+	height:200px;
 	border: 1px solid 9d9d9d;
 	overflow: hidden;
 	cursor:crosshair;

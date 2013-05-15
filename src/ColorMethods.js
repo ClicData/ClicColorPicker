@@ -8,7 +8,7 @@
 var _hexRegex = /^#([A-Fa-f0-9]{6})$/;
 
 var _rgbRegex = /^rgb\(\s*(\d+),\s*(\d+),\s*(\d+)\)$/;
-var _rgbaRegex = /^rgba\(\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\)$/;
+var _rgbaRegex = /^rgba\(\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d?\.?\d*)\)$/;
 
 function isColor(str) {
 	return (isHex(str) || isRGB(str) || isRGBA(str));
@@ -48,7 +48,7 @@ function ParseHex(str) {
 		r = parseInt(str.substring(1,3),16);
 		g = parseInt(str.substring(3,5),16);
 		b = parseInt(str.substring(5,7),16);
-		return {r:r,g:g,b:b,a:255}
+		return {r:r,g:g,b:b,a:1}
 	} catch (e) {
 		console.log('Error parsing hex string: ' + str)
 	}
@@ -61,7 +61,7 @@ function ParseRGB(str) {
 		var rgb = ['','','',''];
 		var buffer = "";
 		while (toParse.length > 0) {
-			if (!isNaN(parseInt(toParse[0]))) {
+			if (toParse[0] == '.' || !isNaN(parseInt(toParse[0]))) {
 				buffer += toParse[0].toString();
 			} else if (toParse[0] == ',' || toParse[0] == ')') {
 				rgb[index] = buffer;
@@ -73,14 +73,14 @@ function ParseRGB(str) {
 		}
 
 		var rv = {
-			r:parseInt(rgb[0]),
-			g:parseInt(rgb[1]),
-			b:parseInt(rgb[2]),
-			a:parseInt(rgb[3])
+			r:parseFloat(rgb[0]),
+			g:parseFloat(rgb[1]),
+			b:parseFloat(rgb[2]),
+			a:parseFloat(rgb[3])
 		};
 
 		if (isNaN(rv.a)) {
-			rv.a = 255;
+			rv.a = 1;
 		}
 
 		return rv;
@@ -131,7 +131,7 @@ function HSLToRGB(h, s, l){
         b = hue2rgb(p, q, h - 1/3);
     }
 
-    return {r: Math.round(r * 255), g:Math.round(g * 255), b:Math.round(b * 255),a:255};
+    return {r: Math.round(r * 255), g:Math.round(g * 255), b:Math.round(b * 255),a:1};
 }
 
 function RGBToHSL(rgb){
@@ -175,7 +175,7 @@ function ObjectToRGBAString(obj) {
 	rv += ", " + obj.g.toString(10);
 	rv += ", " + obj.b.toString(10);
 	if (isNaN(parseInt(obj.a))) {
-		rv += ", 255";	
+		rv += ", 1";	
 	} else {		
 		rv += ", " + obj.a.toString(10);	
 	}
@@ -194,5 +194,44 @@ function ObjectToRGBString(obj) {
 }
 
 
+/*
+//
+// CSS conversion
+//
+*/
+
+// takes something like this: [{percent:12,color:{rgb}},{}...]
+// and gives you something like this: ["-webkit-gradient(linear"],"...."]
+function GetLinearGradientCss(angle,stops) {
+	if (stops.length == 0) {
+		return [];
+	}
+
+	var rv = new Array(4);
+	var list = "";
+	for (var i=0;i<stops.length;i++) {
+		list += ","
+		list += ObjectToRGBAString(stops[i].color);
+		list += " ";
+		list += stops[i].percent.toString();
+		list += "%";
+	}
+
+
+	rv[0] = "-moz-linear-gradient(" + (angle - 45).toString() + "deg " + list + ")";
+	rv[1] = "-webkit-linear-gradient(" + (angle - 45).toString() + "deg " + list + ")";
+	rv[2] = "-ms-linear-gradient(" + (angle-45).toString() + "deg " + list + ")";
+	rv[3] = "linear-gradient(" + (angle).toString() + "deg " +list + ")";
+
+	return rv;
+}
+
+function ApplyGradientBackground(obj,angle,stops) {
+	var strs = GetLinearGradientCss(angle,stops);
+	for (var i = 0; i < strs.length;i++) {
+		obj.css("background",strs[i]);
+	}
+
+}
 
 

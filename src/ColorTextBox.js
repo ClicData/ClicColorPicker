@@ -10,9 +10,11 @@
 
 	function drawColorTextBox(app) {	
 		var parent = $("<div class='colorTBParent'></div>")	
+		var bg =  $('<span class="colorTBBackground"></span>');
+		bg.appendTo(parent);
+
 		app.ui.previewArea =  $('<span class="colorTBPreview"></span>');
 		app.ui.previewArea.appendTo(parent);
-
 
 		app.ui.textBox =  $('<input type="text" class="colorTBInput" />');		
 		app.ui.textBox.blur(function (e) {textBoxChanged(app);});
@@ -53,6 +55,7 @@
 		var str;
 		if (app.settings.enableOpacity) {
 			str = ObjectToRGBAString(app.state.selectedColor);			
+
 		} else {
 			str = ObjectToRGBString(app.state.selectedColor);
 			
