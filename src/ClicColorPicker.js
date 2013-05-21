@@ -31,7 +31,18 @@
 		app.ui.mainPanel.appendTo($('body'));
 		app.ui.mainPanel.hide();
 
-		if (app.settings.type == 'simple') {
+		if (app.settings.type == 'gradient') { 
+			app.ui.mainPanel.ClicGradientPicker({
+				'applyClick':function () {
+					var color = app.ui.mainPanel.ClicGradientPicker('getColor');
+					ApplyClicked(app,color);					
+				},
+				'cancelClick':function () {
+					app.state.mainPanelVisible = false;
+		  			UpdateUI(app);
+				}
+			});			
+		} else if (app.settings.type == 'simple') {
 			app.ui.mainPanel.ClicSimplePicker({
 				'startColor':app.state.selectedColor,
 				'applyClick':function () {
