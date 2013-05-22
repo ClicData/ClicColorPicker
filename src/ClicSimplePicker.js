@@ -129,9 +129,7 @@
 		$('.sample.selected').removeClass('selected');
 		$(app.ui.selectedSample ).addClass('selected');
 
-		app.ui.colorTextBox.ColorTextBox('setValue',app.state.selectedColor);
-
-		
+		app.ui.colorTextBox.ColorTextBox('setValue',app.state.selectedColor);		
 	}
 
 

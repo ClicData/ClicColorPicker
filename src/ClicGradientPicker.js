@@ -28,52 +28,69 @@
 	}
 
 	function drawGradientSlider(app) {
-
-		app.ui.gradientSlider = $('<div class="noUiSlider gradientSlider"></div>').noUiSlider({
-			range: [0, 100]
-			,start: [0,100]
-		   	,step: 1
-		   	,slide: function(e) {
-		   		var vals = $(this).val();
-		   		UpdateSliderState(app, vals, e);
-		    	UpdateUI(app);
-		   	}
-		});			
-
-		app.ui.gradientSlider.children('a').click(function {
-			
+		app.ui.gradientSlider = $('<div></div>').ClicGradientSlider({
+			requestingColor: function (oldColor, callback) {SliderRequestsColor(oldColor, callback,app);}
 		});
 
 		app.ui.gradientSlider.appendTo(app.ui.gradientPicker);
 	}
 
-	function  UpdateSliderState(app,vals, e) {		
-		// need to find out what changed
-		for (var i = 0; i < vals.length; i++) {
+	function SliderRequestsColor(oldColor, callback,app) {
+		var colorPicker = $("<div />").ClicFullPicker({
+			enableOpacity:app.settings.enableOpacity,
+			startColor:oldColor,
+			applyClick: function (e) {
+				var color = colorPicker.ClicFullPicker('getColor');
+				callback(color);
+				colorPicker.hide();
+				app.ui.gradientPicker.show();
+			},
+			cancelClick: function () {
+				colorPicker.hide();
+				app.ui.gradientPicker.show();
+			}
+		});
 
-		}
+		app.ui.gradientPicker.hide();
+		colorPicker.appendTo(app.ui.mainPanel);
+	} 	
 
 
-		app.ui.gradientSlider = $('<div class="noUiSlider gradientSlider"></div>').noUiSlider({
-			range: [0, 100]
-			,start: [0,100]
-		   	,step: 1
-		   	,slide: function(e) {
-		   		var vals = $(this).val();
-		   		UpdateSliderState(app, vals, e);
-		    	UpdateUI(app);
-		   	}
-		});			
-	}
+	function drawForm(app) {
+		// todo, get angle, radial/linear, etc...
+		var parent = $('<div class="gradForm"></div>');
+		var radLinLabel = $('<label>Type</label>');
+		app.ui.radField = $('<input name="radlin" type="radio">Radial</input>');
+		app.ui.radField.click(function () {
+			if($(this).is(':checked')) {
+				app.state.radial = true;
+				UpdateUI(app);
+			}
+		});
+		
+		app.ui.linField = $('<input name="radlin" checked="checked" type="radio">Linear</input>');
+		app.ui.linField.click(function () {
+			if( $(this).is(':checked') ) {
+				app.state.radial = false;
+				UpdateUI(app);
+			}
+		});
+
+		radLinLabel.appendTo(parent);
+		app.ui.radField .appendTo(parent );
+		app.ui.linField.appendTo(parent );
 
 
-	function drawForm() {
+		var angleLabel = $("<label>Angle</label>");
+		angleLabel.appendTo(parent);
 
+		parent.appendTo(app.ui.gradientPicker);
 	}
 
 	function drawGradientPicker(app) {
 		app.ui.gradientPicker = $('<div></div>');
 		drawGradientSlider(app);
+		drawForm(app);
 		drawCommandRow(app);
 		app.ui.gradientPicker.appendTo(app.ui.mainPanel);
 	}
@@ -92,10 +109,8 @@
 	//--------------//
 
 	function getSettings(options) {
-		return $.extend( {
-        	startColor:'#FFFFFF',
-            defaultPalette:'websafe', // which palette is selected by defaul, only applies to simple mode
-            mainPanelCssClass:"",
+		return $.extend( {   
+			enableOpacity:false,                       
             applyClick:null,
             cancelClick:null,
             translations: {
@@ -112,19 +127,14 @@
     		$(control).data('ClicGradientPicker', {
     			settings:settings,
        			state: {
-					steps:[{
-						x:0,
-						color:{r:0,g:0,b:0,a:1}
-				},{
-						x:100,
-						color:{r:255,g:255,b:255,a:1}
-				}],
+       				radial:false
 				},
 				ui: {
 					mainPanel:$(control),
 					gradientPicker:null,
-					paletteLabel:null,
-					colorTextBox:null
+					gradientSlider:null,
+					linField:null,
+					radField:null
 				}
    			});
 

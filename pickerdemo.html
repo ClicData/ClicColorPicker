@@ -5,6 +5,7 @@
 	<body>
 		<p><input id="simple" type="button" value="you'll never see this" /></p>
 		<p><input id="full" type="button" value="you'll never see this" /></p>
+		<p><input id="grad" type="button" value="you'll never see this" /></p>
 		<script src="jquery-2.0.0.min.js"></script>		
 		
 		<p id="val" />
@@ -17,6 +18,8 @@
 		<script src="src/ColorTextBox.js"></script>
 		<script src="src/ClicFullColorPicker.js"></script>
 		<script src="src/ClicSimplePicker.js"></script>
+		<script src="src/ClicGradientSlider.js"></script>
+		<script src="src/ClicGradientPicker.js"></script>
 		<script src="src/ClicColorPicker.js"></script>
 		
 		<!--<script src="ClicColorPicker-min.js"></script>-->
@@ -32,6 +35,7 @@
 					}
 				});
 				$('#full').ClicColorPicker({'startColor':"rgb(196, 16, 196)", 'type':'full',enableOpacity:true});
+				$('#grad').ClicColorPicker({'type':'gradient',enableOpacity:true});
 			});
 		</script>
 	

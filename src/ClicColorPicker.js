@@ -33,6 +33,7 @@
 
 		if (app.settings.type == 'gradient') { 
 			app.ui.mainPanel.ClicGradientPicker({
+				enableOpacity:app.settings.enableOpacity,
 				'applyClick':function () {
 					var color = app.ui.mainPanel.ClicGradientPicker('getColor');
 					ApplyClicked(app,color);					

@@ -229,7 +229,7 @@ function GetLinearGradientCss(angle,stops) {
 function ApplyGradientBackground(obj,angle,stops) {
 	var strs = GetLinearGradientCss(angle,stops);
 	for (var i = 0; i < strs.length;i++) {
-		obj.css("background",strs[i]);
+		obj.css("background",strs[i] + ", url('images/transparent.png') repeat");
 	}
 
 }

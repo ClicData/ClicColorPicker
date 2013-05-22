@@ -241,6 +241,7 @@
     	if (!app) {
 			var settings = getSettings(options);			
 			var hsl = RGBToHSL(settings.startColor)
+			if (settings.startColor.a) {settings.opacity = settings.startColor.a;}
 
     		$(control).data('ClicFullPicker', {
     			settings:settings,

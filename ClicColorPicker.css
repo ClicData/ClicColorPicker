@@ -180,7 +180,7 @@
 	margin-left: 20px;
 	margin-right: 20px;
 
-	background: url(images/transparent.png);
+	background: url(images/transparent.png) repeat;
 	border:1px solid #9d9d9d;
 }
 
@@ -207,6 +207,28 @@ margin-left: 10px;
 	border: 1px solid 9d9d9d;
 	overflow: hidden;
 	cursor:crosshair;
+}
+
+/* grad slider */
+.gradSlider {
+	height: 30px;
+	width: 227px;
+	margin: 10px;	
+	background: red;
+}
+
+.gradSliderHandle {
+	display: inline-block;
+	width: 13px;
+	height: 18px;
+	background: url(images/handle.png) repeat;
+	position: relative;
+	top:20px;	
+}
+
+.gradForm {
+	margin-right: 10px;
+	margin-left: 10px;
 }
 
 
