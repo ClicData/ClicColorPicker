@@ -227,7 +227,13 @@ function GetLinearGradientCss(angle,stops) {
 }
 
 function ApplyGradientBackground(obj,angle,stops) {
-	var strs = GetLinearGradientCss(angle,stops);
+	// copy input to avoid side effects
+	var sorted = stops.slice();
+
+	// now sort by percentage so they show up in the right order
+	sorted.sort(function (a,b) {return a.percent - b.percent} );
+
+	var strs = GetLinearGradientCss(angle,sorted);
 	for (var i = 0; i < strs.length;i++) {
 		obj.css("background",strs[i] + ", url('images/transparent.png') repeat");
 	}

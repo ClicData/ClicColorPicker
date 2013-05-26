@@ -29,13 +29,13 @@
 
 	function drawGradientSlider(app) {
 		app.ui.gradientSlider = $('<div></div>').ClicGradientSlider({
-			requestingColor: function (oldColor, callback) {SliderRequestsColor(oldColor, callback,app);}
+			requestingColor: function (callback,oldColor) {SliderRequestsColor(callback,app,oldColor);}
 		});
 
 		app.ui.gradientSlider.appendTo(app.ui.gradientPicker);
 	}
 
-	function SliderRequestsColor(oldColor, callback,app) {
+	function SliderRequestsColor(callback,app,oldColor) {
 		var colorPicker = $("<div />").ClicFullPicker({
 			enableOpacity:app.settings.enableOpacity,
 			startColor:oldColor,
@@ -83,6 +83,20 @@
 
 		var angleLabel = $("<label>Angle</label>");
 		angleLabel.appendTo(parent);
+		app.ui.anglePicker = $("<div />").anglepicker({
+			start: function(e, ui) {
+
+			},
+			change: function(e, ui) {
+			    $("#label").text(ui.value)
+			},
+			stop: function(e, ui) {
+
+			},
+			value: 0
+		});
+		
+		app.ui.anglePicker.appendTo(parent);
 
 		parent.appendTo(app.ui.gradientPicker);
 	}
@@ -98,7 +112,11 @@
 	
 	//methods
 	function UpdateUI(app) {
-		
+		if (app.state.radial) {
+			app.ui.anglePicker.hide();
+		} else {
+			app.ui.anglePicker.show();
+		}
 	}
 
 
@@ -134,7 +152,8 @@
 					gradientPicker:null,
 					gradientSlider:null,
 					linField:null,
-					radField:null
+					radField:null,
+					anglePicker:null
 				}
    			});
 

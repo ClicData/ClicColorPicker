@@ -9,55 +9,89 @@
 	function drawGradientSlider(app) {
 		app.ui.gradientSlider = $('<div class="gradSlider"></div>');
 		app.ui.gradientSlider.click(function (e) {
-
+			if (e.target == this) {
+				HandleClick(app);	
+			}
 		});
 
+		// first stop
+		var zero = $('<span class="gradSliderHandle" />');
+		zero.css('left','5');
+		zero.data('colorStopIndex', 0);
+		zero.appendTo(app.ui.gradientSlider);
+		zero.click(function (e) {HandleClick(app,$(this))});
+
+		// last stop
+		var hundred = $('<span class="gradSliderHandle" />');
+		hundred.css('left','230');
+		hundred.data('colorStopIndex',  app.state.colorStops.length-1);
+		hundred.appendTo(app.ui.gradientSlider);
+		hundred.click(function (e) {HandleClick(app,$(this))});
+
+		// others that may exist
+		if (app.state.colorStops.length>2) {
+			for (var i =1;i<app.state.colorStops.length-1;i++) {
+				renderNewStop(app.state.colorStops[i],app);
+			}	
+		}
+		
 		app.ui.gradientSlider.appendTo(app.ui.parent);
 	}
 
-	
+	function renderNewStop(stop, app) {
+		var newb = $('<span class="gradSliderHandle" />');
+		newb.css('left',stop.percent + '%');
+		app.state.colorStops.push(stop);
+		newb.data('colorStopIndex',  app.state.colorStops.length - 1);
+		newb.appendTo(app.ui.gradientSlider);
+		newb.click(function (e) {
+			if (!$(this).hasClass('noclick'))
+			HandleClick(app,$(this))
+		});
 
-	function HandleClick(sender, e, app) {
-		if (app.settings.requestingColor) {
-			var stopIndex = sender.data('colorStopIndex');
-
-			app.settings.requestingColor( app.state.colorStops[stopIndex].color, function (color) {
-				
-				app.state.colorStops[stopIndex].color = color;
+		newb.draggable({axis: "x",containment: "parent",
+			start: function () {$(this).addClass("noclick")},
+			drag: function(e) {        		
+				var parentOffset = $(this).offset().left ;
+				var width = $(this).parent().width();
+				var percent = (parentOffset / width)* 100;
+        		stop.percent = percent;
 				UpdateUI(app);
-			});
-		}
+			},
+			stop: function () {e.removeClass('noclick')}
+		});
+	}
 
-		e.preventDefault();
+	function HandleClick(app, handle) {
+		if (app.settings.requestingColor) {
+			if (handle) { 
+				var stopIndex = handle.data('colorStopIndex');
+				app.settings.requestingColor(function (color) {
+					app.state.colorStops[stopIndex].color = color;
+					UpdateUI(app);
+				},
+				app.state.colorStops[stopIndex].color);
+			} else { 
+				var percent = 50;
+				app.settings.requestingColor(function (color) {
+					// create new stop
+					var newStop = {percent:percent ,color:color}  					
+  					renderNewStop(newStop,app);
+					UpdateUI(app);
+				});
+			}
+		}
 	}
 
 	//methods
 	function UpdateUI(app) {
-		app.ui.gradientSlider.html('');
-		// first stop
-		var zero = $('<span class="gradSliderHandle" />');
-		zero.css('left','-5');
-		zero.data('colorStopIndex', 0);
-		zero.appendTo(app.ui.gradientSlider);
-		zero.click(function (e) {HandleClick($(this),e,app)});
-
-		// last stop
-		var hundred = $('<span class="gradSliderHandle" />');
-		hundred.css('left','207');
-		hundred.data('colorStopIndex',  app.state.colorStops.length-1);
-		hundred.appendTo(app.ui.gradientSlider);
-		hundred.click(function (e) {HandleClick($(this),e,app)});
-
-		// now build intermediate stops...
-		if (app.state.colorStops.length>2) {
-
-		}
-
+		
+		
 
 		ApplyGradientBackground(app.ui.gradientSlider,90,app.state.colorStops);
-
-
 	}
+
+
 
 
 	//--------------//

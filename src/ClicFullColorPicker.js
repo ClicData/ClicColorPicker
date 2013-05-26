@@ -1,7 +1,8 @@
 (function( $ ){
 	function Init(element,app) {
 		drawFullPicker(app);		
-		UpdateUI(app);
+		setTimeout(function(){UpdateUI(app)},1); // finish render before setting ui
+
 	}
 
 	
@@ -222,8 +223,8 @@
 	//--------------//
 
 	function getSettings(options) {
-		return $.extend( {
-        	startColor:'#FFFFFF',
+		var rv = $.extend( {
+        	startColor: {r:255,g:255,b:255,a:1},
         	enableOpacity:false,
         	opacity:1,
             mainPanelCssClass:"",
@@ -234,6 +235,13 @@
             	cancel:"Cancel"
             }
         }, options);
+
+		if (!rv.startColor) {
+			rv.startColor = {r:255,g:255,b:255,a:1};
+		}
+		
+
+        return rv;
 	}
 
 	function getApp(control,options) {

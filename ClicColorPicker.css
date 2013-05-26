@@ -222,8 +222,8 @@ margin-left: 10px;
 	width: 13px;
 	height: 18px;
 	background: url(images/handle.png) repeat;
-	position: relative;
-	top:20px;	
+	position: absolute;
+	top:30px;	
 }
 
 .gradForm {
