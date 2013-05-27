@@ -55,12 +55,27 @@
 		colorPicker.appendTo(app.ui.mainPanel);
 	} 	
 
+	// we need ids for some elements, yet we want to allow multiple controls per page without id conflicts
+	function CreateRandomId()
+	{
+	    var text = "";
+	    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+	    for( var i=0; i < 5; i++ ) {
+			text += possible.charAt(Math.floor(Math.random() * possible.length));
+	    }	        
+
+	    return text;
+	}
 
 	function drawForm(app) {
-		// todo, get angle, radial/linear, etc...
-		var parent = $('<div class="gradForm"></div>');
-		var radLinLabel = $('<label>Type</label>');
-		app.ui.radField = $('<input name="radlin" type="radio">Radial</input>');
+		var randId = CreateRandomId();
+		var parent = $('<div class="gradForm"></div>');		
+		
+		// radial/linear radio buttons.
+		var radLinRow = $('<div class="row"></div>');
+		var radLinLabel = $('<label>Type</label>');		
+		app.ui.radField = $('<input id="' + randId +'" name="radlin" type="radio"><label for="' + randId + '">Radial</label></input>');
 		app.ui.radField.click(function () {
 			if($(this).is(':checked')) {
 				app.state.radial = true;
@@ -68,36 +83,48 @@
 			}
 		});
 		
-		app.ui.linField = $('<input name="radlin" checked="checked" type="radio">Linear</input>');
+		
+		randId = CreateRandomId();
+		app.ui.linField = $('<input id="' + randId +'"  name="radlin" checked="checked" type="radio"><label for="' + randId + '">Linear</label></input>');
 		app.ui.linField.click(function () {
-			if( $(this).is(':checked') ) {
+			if($(this).is(':checked')) {
 				app.state.radial = false;
 				UpdateUI(app);
 			}
 		});
 
-		radLinLabel.appendTo(parent);
-		app.ui.radField .appendTo(parent );
-		app.ui.linField.appendTo(parent );
-
-
+		
+		radLinLabel.appendTo(radLinRow);
+		app.ui.radField .appendTo(radLinRow );
+		app.ui.linField.appendTo(radLinRow );
+		radLinRow.appendTo(parent);
+		
+		// angle selector		
+		app.ui.angleRow = $('<div class="row"></div>');
 		var angleLabel = $("<label>Angle</label>");
-		angleLabel.appendTo(parent);
 		app.ui.anglePicker = $("<div />").anglepicker({
-			start: function(e, ui) {
-
-			},
+			clockwise: false,
 			change: function(e, ui) {
-			    $("#label").text(ui.value)
-			},
-			stop: function(e, ui) {
-
+				$('#val').text(ui.value);
+				app.state.linearAngle = (ui.value + 90) % 360;
 			},
 			value: 0
 		});
 		
-		app.ui.anglePicker.appendTo(parent);
+		angleLabel.appendTo(app.ui.angleRow);
+		app.ui.anglePicker.appendTo(app.ui.angleRow);
+		app.ui.angleRow.appendTo(parent);
 
+		// presets 
+		var presetRow = $('<div class="row"></div>');
+		var presetLabel = $("<label>Presets</label>");
+		var presetControl = $("<b></b>");
+		
+		presetLabel.appendTo(presetRow);
+		presetControl.appendTo(presetRow);
+		presetRow.appendTo(parent);		
+
+		// add to picker
 		parent.appendTo(app.ui.gradientPicker);
 	}
 
@@ -113,9 +140,9 @@
 	//methods
 	function UpdateUI(app) {
 		if (app.state.radial) {
-			app.ui.anglePicker.hide();
+			app.ui.angleRow.hide();
 		} else {
-			app.ui.anglePicker.show();
+			app.ui.angleRow.show();
 		}
 	}
 
@@ -145,7 +172,8 @@
     		$(control).data('ClicGradientPicker', {
     			settings:settings,
        			state: {
-       				radial:false
+       				radial:false,
+       				linearAngle:null
 				},
 				ui: {
 					mainPanel:$(control),
@@ -153,16 +181,31 @@
 					gradientSlider:null,
 					linField:null,
 					radField:null,
-					anglePicker:null
+					anglePicker:null,
+					angleRow:null
 				}
    			});
 
 			app = $(control).data('ClicGradientPicker');
     	}
     	return app;
-	}
+	}	
 
-	var methods = {		
+	var methods = {	
+		getValue : function (options) {
+			var rv = [];
+			this.each(function () {
+            	var app = getApp(this,options);
+            	var val = {
+            		isRadial: app.state.radial,
+            		linearAngle: app.state.radial?undefined:app.state.linearAngle,
+            		colorStops: app.ui.gradientSlider.ClicGradientSlider('getValue')
+            	};
+
+            	rv.push(val);
+            });
+            return rv[0];
+		},
         init : function( options ) {
             return this.each(function () {
             	var app = getApp(this,options);

@@ -202,7 +202,7 @@ function ObjectToRGBString(obj) {
 
 // takes something like this: [{percent:12,color:{rgb}},{}...]
 // and gives you something like this: ["-webkit-gradient(linear"],"...."]
-function GetLinearGradientCss(angle,stops) {
+function GetLinearGradientCss(angle,stops,isRadial) {
 	if (stops.length == 0) {
 		return [];
 	}
@@ -217,23 +217,33 @@ function GetLinearGradientCss(angle,stops) {
 		list += "%";
 	}
 
+	if (isRadial) {
+		rv[0] = "-moz-radial-gradient(center, ellipse cover " + list + ")";
+		rv[1] = "-webkit-radial-gradient(center, ellipse cover " + list + ")";
+		rv[2] = "-ms-radial-gradient(center, ellipse cover " + list + ")";
+		rv[3] = "radial-gradient(ellipse at center " +list + ")";
+	} else {
+		rv[0] = "-moz-linear-gradient(" + (angle - 45).toString() + "deg " + list + ")";
+		rv[1] = "-webkit-linear-gradient(" + (angle - 45).toString() + "deg " + list + ")";
+		rv[2] = "-ms-linear-gradient(" + (angle-45).toString() + "deg " + list + ")";
+		rv[3] = "linear-gradient(" + (angle).toString() + "deg " +list + ")";	
+	}
 
-	rv[0] = "-moz-linear-gradient(" + (angle - 45).toString() + "deg " + list + ")";
-	rv[1] = "-webkit-linear-gradient(" + (angle - 45).toString() + "deg " + list + ")";
-	rv[2] = "-ms-linear-gradient(" + (angle-45).toString() + "deg " + list + ")";
-	rv[3] = "linear-gradient(" + (angle).toString() + "deg " +list + ")";
+
+	
 
 	return rv;
 }
 
-function ApplyGradientBackground(obj,angle,stops) {
+function ApplyGradientBackground(obj,angle,stops,isRadial) {
+	if (!angle) { angle = 0;}
 	// copy input to avoid side effects
 	var sorted = stops.slice();
 
 	// now sort by percentage so they show up in the right order
 	sorted.sort(function (a,b) {return a.percent - b.percent} );
 
-	var strs = GetLinearGradientCss(angle,sorted);
+	var strs = GetLinearGradientCss(angle,sorted,isRadial);
 	for (var i = 0; i < strs.length;i++) {
 		obj.css("background",strs[i] + ", url('images/transparent.png') repeat");
 	}

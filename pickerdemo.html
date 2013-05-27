@@ -1,19 +1,25 @@
 <html>
-	<head>		
-		<link rel="stylesheet" type="text/css" href="src/anglepicker/ui.anglepicker.css"></link>
+	<head>				
 		<link rel="stylesheet" type="text/css" href="ClicColorPicker.css"></link>
 	</head>
 	<body>
+		
+		
+
 		<p><input id="simple" type="button" value="you'll never see this" /></p>
 		<p><input id="full" type="button" value="you'll never see this" /></p>
 		<p><input id="grad" type="button" value="you'll never see this" /></p>
+		
+		<div id="preview" style="width:200px;height:200px;"> Choose a color above for a preview</div>
+
+
 		<script src="jquery-2.0.0.min.js"></script>		
 		
-		<p id="val" />
+		
 
 		<!--
 		All of this has been minified into ClicColorPicker-min.js
-		-->
+		
 		<script src="src/jquery-ui-custom-min.js"></script>
 		<script src="src/anglepicker/ui.anglepicker.js"></script>
 		<script src="src/nouislider/jquery.nouislider.js"></script>
@@ -24,8 +30,8 @@
 		<script src="src/ClicGradientSlider.js"></script>
 		<script src="src/ClicGradientPicker.js"></script>
 		<script src="src/ClicColorPicker.js"></script>
-		
-		<!--<script src="ClicColorPicker-min.js"></script>-->
+		-->
+		<script src="ClicColorPicker-min.js"></script>
 		
 
 		<script>
@@ -33,12 +39,18 @@
 				$('#simple').ClicColorPicker({
 					'startColor':"#c4c4c4",
 					'onChanged': function (e) {
-						val
-						alert(e.oldValue + " has changed to " + e.newValue);
+						$('#preview').css('background',ObjectToRGBAString(e.newValue));
 					}
 				});
-				$('#full').ClicColorPicker({'startColor':"rgb(196, 16, 196)", 'type':'full',enableOpacity:true});
-				$('#grad').ClicColorPicker({'type':'gradient',enableOpacity:true});
+				$('#full').ClicColorPicker({'startColor':"rgb(196, 16, 196)", 'type':'full',enableOpacity:true,
+					'onChanged': function (e) {
+						$('#preview').css('background',ObjectToRGBAString(e.newValue));
+					}});
+				$('#grad').ClicColorPicker({'type':'gradient',enableOpacity:true,
+					'onChanged': function (e) {
+						ApplyGradientBackground($('#preview'),e.newValue.linearAngle, e.newValue.colorStops, e.newValue.isRadial);
+					}
+				});
 			});
 		</script>
 	

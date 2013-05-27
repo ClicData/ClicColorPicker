@@ -35,8 +35,8 @@
 			app.ui.mainPanel.ClicGradientPicker({
 				enableOpacity:app.settings.enableOpacity,
 				'applyClick':function () {
-					var color = app.ui.mainPanel.ClicGradientPicker('getColor');
-					ApplyClicked(app,color);					
+					var val = app.ui.mainPanel.ClicGradientPicker('getValue');
+					ApplyClicked(app,val);					
 				},
 				'cancelClick':function () {
 					app.state.mainPanelVisible = false;
@@ -71,21 +71,25 @@
 		}
 	}
 	
-	function ApplyClicked(app, newcolor) {
+	function ApplyClicked(app, newvalue) {
 		app.state.mainPanelVisible = false;
-		app.state.selectedColor = newcolor;
-		UpdateUI(app);
+		if (app.settings.type == 'gradient') { 
+			app.state.selectedGradient = newvalue;
+		} else {
+			app.state.selectedColor = newvalue;
+		}
 
 		if (app.settings.onChanged) {
 			var e = {
-				oldValue:app.state.oldColor,
-				newValue:newcolor
+				oldValue:app.state.oldValue,				
+				newValue:newvalue
 			};
 			app.settings.onChanged(e);
 
-			app.state.oldColor = newcolor;
+			app.state.oldValue = newvalue;
 		}
-
+		
+		UpdateUI(app);
 	}
 
 	function setInternalEvents(app)  {
@@ -126,8 +130,19 @@
 			app.ui.mainPanel.fadeOut('fast');
 			app.ui.arrowArea.html('&#x25BC;');
 		}
+
+		if (app.settings.type == 'gradient' && app.state.selectedGradient) { 
+			ApplyGradientBackground(
+				app.ui.previewArea,
+				app.state.selectedGradient.linearAngle,
+				app.state.selectedGradient.colorStops,
+				app.state.selectedGradient.isRadial				
+			)			
+		} else {
+			app.ui.previewArea.css("background-color", ObjectToRGBAString(app.state.selectedColor));
+		}
 		
-		app.ui.previewArea.css("background-color", ObjectToRGBAString(app.state.selectedColor));
+		
 	}
 
 	function SetMainPanelPosition(app) {
@@ -163,8 +178,9 @@
                			state: {
                				mainPanelVisible:false,
 							selectedColor: StringToObject(settings.startColor),
-							oldColor:StringToObject(settings.startColor),
-							simplePaletteIndex:0
+							oldValue:StringToObject(settings.startColor),
+							simplePaletteIndex:0,
+							selectedGradient: null
 						},
 						ui: {
 							opener:null,

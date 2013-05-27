@@ -10,7 +10,12 @@
 		app.ui.gradientSlider = $('<div class="gradSlider"></div>');
 		app.ui.gradientSlider.click(function (e) {
 			if (e.target == this) {
-				HandleClick(app);	
+				var parentLeft = $(this).offset().left;
+    			var clickLeft = e.pageX;
+    			var howFarFromLeft = clickLeft - parentLeft;
+				var width = $(this).parent().width();
+				var percent = (howFarFromLeft / width) * 100;
+				NewHandle(app, percent);	
 			}
 		});
 
@@ -45,49 +50,47 @@
 		newb.data('colorStopIndex',  app.state.colorStops.length - 1);
 		newb.appendTo(app.ui.gradientSlider);
 		newb.click(function (e) {
-			if (!$(this).hasClass('noclick'))
-			HandleClick(app,$(this))
+			if ($(this).hasClass('noclick')) {
+				$(this).removeClass('noclick')				
+			} else {
+				HandleClick(app,$(this))	
+			}
 		});
 
 		newb.draggable({axis: "x",containment: "parent",
 			start: function () {$(this).addClass("noclick")},
 			drag: function(e) {        		
-				var parentOffset = $(this).offset().left ;
+				var parentOffset = $(this).offset().left - ($(this).width());
 				var width = $(this).parent().width();
 				var percent = (parentOffset / width)* 100;
         		stop.percent = percent;
 				UpdateUI(app);
-			},
-			stop: function () {e.removeClass('noclick')}
+			}			
+		});
+	}
+
+	function NewHandle(app, percent) {		
+		app.settings.requestingColor(function (color) {
+			// create new stop
+			var newStop = {percent:percent ,color:color}
+			renderNewStop(newStop,app);
+			UpdateUI(app);
 		});
 	}
 
 	function HandleClick(app, handle) {
 		if (app.settings.requestingColor) {
-			if (handle) { 
-				var stopIndex = handle.data('colorStopIndex');
-				app.settings.requestingColor(function (color) {
-					app.state.colorStops[stopIndex].color = color;
-					UpdateUI(app);
-				},
-				app.state.colorStops[stopIndex].color);
-			} else { 
-				var percent = 50;
-				app.settings.requestingColor(function (color) {
-					// create new stop
-					var newStop = {percent:percent ,color:color}  					
-  					renderNewStop(newStop,app);
-					UpdateUI(app);
-				});
-			}
+			var stopIndex = handle.data('colorStopIndex');
+			app.settings.requestingColor(function (color) {
+				app.state.colorStops[stopIndex].color = color;
+				UpdateUI(app);
+			},
+			app.state.colorStops[stopIndex].color);
 		}
 	}
 
 	//methods
 	function UpdateUI(app) {
-		
-		
-
 		ApplyGradientBackground(app.ui.gradientSlider,90,app.state.colorStops);
 	}
 
@@ -130,7 +133,15 @@
     	return app;
 	}
 
-	var methods = {		
+	var methods = {	
+		getValue : function (options) {
+			var rv = [];
+			this.each(function () {
+            	var app = getApp(this,options);
+            	rv.push(app.state.colorStops);
+            });
+            return rv[0];
+		},	
         init : function( options ) {
             return this.each(function () {
             	var app = getApp(this,options);
