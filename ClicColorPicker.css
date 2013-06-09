@@ -74,7 +74,7 @@
 }
 
 .colorTBParent {
-	margin: 10px 10px 0px 10px;
+	margin: 0px 10px 0px 10px;
 	max-height: 40px;
 	overflow: hidden;
 	border-left: 1px solid #9d9d9d;	
@@ -115,6 +115,10 @@
 	position: absolute;
 	background-color: #fcfcfc;
 	border:1px solid #9d9d9d;
+}
+
+.mainPanel > div {
+	margin-top: 10px;
 }
 
 .sample {
@@ -206,9 +210,10 @@ margin-left: 10px;
 
 /* grad slider */
 .gradSlider {
+	cursor: pointer;
 	height: 30px;
 	width: 227px;
-	margin: 10px;	
+	margin: 0px 10px 10px 10px;
 	background: red;
 }
 
@@ -243,6 +248,19 @@ margin-left: 10px;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.delete {
+	margin: 0px;
+	padding: 0px;
+	border: 1px solid #970b0e;
+	border-bottom: none;
+	background: #c60f13;
+	color:white;
+	cursor:pointer;
+	position: relative;
+	left:10px;
+	width: 228px;
 }
 
 .button  {

@@ -7,7 +7,7 @@
 
 
 	function drawGradientSlider(app) {
-		app.ui.gradientSlider = $('<div class="gradSlider"></div>');
+		app.ui.gradientSlider = $('<div class="gradSlider" title="Click to add a gradient stop"></div>');
 		app.ui.gradientSlider.click(function (e) {
 			if (e.target == this) {
 				var parentLeft = $(this).offset().left;
@@ -20,18 +20,18 @@
 		});
 
 		// first stop
-		var zero = $('<span class="gradSliderHandle" />');
+		var zero = $('<span class="gradSliderHandle" title="Click to modify or delete the gradient stop" />');
 		zero.css('left','5');
 		zero.data('colorStopIndex', 0);
 		zero.appendTo(app.ui.gradientSlider);
-		zero.click(function (e) {HandleClick(app,$(this))});
+		zero.click(function (e) {HandleClick(app,$(this),false)});
 
 		// last stop
-		var hundred = $('<span class="gradSliderHandle" />');
+		var hundred = $('<span class="gradSliderHandle" title="Click to modify or delete the gradient stop" />');
 		hundred.css('left','230');
 		hundred.data('colorStopIndex',  app.state.colorStops.length-1);
 		hundred.appendTo(app.ui.gradientSlider);
-		hundred.click(function (e) {HandleClick(app,$(this))});
+		hundred.click(function (e) {HandleClick(app,$(this),false)});
 
 		// others that may exist
 		if (app.state.colorStops.length>2) {
@@ -44,7 +44,7 @@
 	}
 
 	function renderNewStop(stop, app) {
-		var newb = $('<span class="gradSliderHandle" />');
+		var newb = $('<span class="gradSliderHandle" title="Click to modify or delete the gradient stop" />');
 		newb.css('left',stop.percent + '%');
 		app.state.colorStops.push(stop);
 		newb.data('colorStopIndex',  app.state.colorStops.length - 1);
@@ -53,7 +53,7 @@
 			if ($(this).hasClass('noclick')) {
 				$(this).removeClass('noclick')				
 			} else {
-				HandleClick(app,$(this))	
+				HandleClick(app,$(this),true)	
 			}
 		});
 
@@ -75,17 +75,26 @@
 			var newStop = {percent:percent ,color:color}
 			renderNewStop(newStop,app);
 			UpdateUI(app);
-		});
+		},null,false);
 	}
 
-	function HandleClick(app, handle) {
+	function HandleClick(app, handle,showDelete) {
 		if (app.settings.requestingColor) {
 			var stopIndex = handle.data('colorStopIndex');
-			app.settings.requestingColor(function (color) {
-				app.state.colorStops[stopIndex].color = color;
-				UpdateUI(app);
-			},
-			app.state.colorStops[stopIndex].color);
+			app.settings.requestingColor(
+				function (value) {
+					if (value.toString() === "delete") {
+						handle.remove();
+						app.state.colorStops.splice(stopIndex,1);
+					} else {
+						app.state.colorStops[stopIndex].color = value;	
+					}
+					
+					UpdateUI(app);
+				},
+				app.state.colorStops[stopIndex].color,
+				showDelete
+			);
 		}
 	}
 

@@ -29,28 +29,34 @@
 
 	function drawGradientSlider(app) {
 		app.ui.gradientSlider = $('<div></div>').ClicGradientSlider({
-			requestingColor: function (callback,oldColor) {SliderRequestsColor(callback,app,oldColor);}
+			requestingColor: function (callback,oldColor,showDelete) {SliderRequestsColor(callback,app,oldColor,showDelete);}
 		});
 
 		app.ui.gradientSlider.appendTo(app.ui.gradientPicker);
 	}
 
-	function SliderRequestsColor(callback,app,oldColor) {
+	function SliderRequestsColor(callback,app,oldColor,showDelete) {
 		var colorPicker = $("<div />").ClicFullPicker({
 			enableOpacity:app.settings.enableOpacity,
 			startColor:oldColor,
+			showDelete:showDelete,
+			deleteClick: function (e) {
+				callback("delete");
+				colorPicker.remove();
+				app.ui.gradientPicker.show();
+			},
 			applyClick: function (e) {
-				var color = colorPicker.ClicFullPicker('getColor');
-				callback(color);
-				colorPicker.hide();
+				var value = colorPicker.ClicFullPicker('getColor');
+				callback(value);
+				colorPicker.remove();
 				app.ui.gradientPicker.show();
 			},
 			cancelClick: function () {
-				colorPicker.hide();
+				colorPicker.remove();
 				app.ui.gradientPicker.show();
 			}
 		});
-
+		
 		app.ui.gradientPicker.hide();
 		colorPicker.appendTo(app.ui.mainPanel);
 	} 	

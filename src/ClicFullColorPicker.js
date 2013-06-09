@@ -4,7 +4,6 @@
 		setTimeout(function(){UpdateUI(app)},1); // finish render before setting ui
 
 	}
-
 	
 	function getSelectedColor(app) {
 		var rv = HSLToRGB(app.state.selectedHue,app.state.selectedSaturation,app.state.selectedLightness);
@@ -54,6 +53,11 @@
 				UpdateUI(app);
 			}
 		});
+		
+		if (app.settings.showDelete) {
+
+		}
+
  		textRow.appendTo(app.ui.fullPicker );
 	}
 	
@@ -160,8 +164,21 @@
 		sliderContainer.appendTo(fullArea);
 	}
 
+	function drawDeleteButton(app) {
+		var delBtn = $('<input class="delete" type="button" />');
+		delBtn.val(app.settings.translations.delete);
+		delBtn.click(function() {
+			if (app.settings.deleteClick) {app.settings.deleteClick();}
+		});
+
+		delBtn.appendTo(app.ui.fullPicker);
+	}
+
 	function drawFullPicker(app) {
 		app.ui.fullPicker = $('<div></div>');
+		if (app.settings.showDelete) {
+			drawDeleteButton(app);
+		}
 		drawTextInput(app);
 		drawPicker(app)
 		drawCommandRow(app);
@@ -228,11 +245,14 @@
         	enableOpacity:false,
         	opacity:1,
             mainPanelCssClass:"",
+            showDelete:false,
+            deleteClick:null,
             applyClick:null,
             cancelClick:null,
             translations: {
             	apply:"Apply",
-            	cancel:"Cancel"
+            	cancel:"Cancel",
+            	delete:"Delete"
             }
         }, options);
 
