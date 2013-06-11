@@ -32,6 +32,20 @@
 	text-align: center;
 }
 
+.presetPicker {
+	border: 1px solid #c4c4c4;
+	width: 229px;
+	overflow: scroll;
+}
+
+.presetOption {
+	width:32px; height:32px;	
+	float:left;
+	border: 1px solid #c4c4c4;
+	cursor: pointer;
+}
+
+
 .sampleAreas {	
 	width:227px;
 	height:227px;

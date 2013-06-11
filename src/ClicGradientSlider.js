@@ -18,6 +18,17 @@
 				NewHandle(app, percent);	
 			}
 		});
+		renderStops(app);
+		app.ui.gradientSlider.appendTo(app.ui.parent);
+	}
+
+	function renderStops(app) {
+		// others that may exist
+		if (app.state.colorStops.length>2) {
+			for (var i =1;i<app.state.colorStops.length-1;i++) {
+				renderNewStop(app.state.colorStops[i],app,i);
+			}	
+		}
 
 		// first stop
 		var zero = $('<span class="gradSliderHandle" title="Click to modify or delete the gradient stop" />');
@@ -25,35 +36,31 @@
 		zero.data('colorStopIndex', 0);
 		zero.appendTo(app.ui.gradientSlider);
 		zero.click(function (e) {HandleClick(app,$(this),false)});
-
 		// last stop
 		var hundred = $('<span class="gradSliderHandle" title="Click to modify or delete the gradient stop" />');
 		hundred.css('left','230');
 		hundred.data('colorStopIndex',  app.state.colorStops.length-1);
 		hundred.appendTo(app.ui.gradientSlider);
 		hundred.click(function (e) {HandleClick(app,$(this),false)});
-
-		// others that may exist
-		if (app.state.colorStops.length>2) {
-			for (var i =1;i<app.state.colorStops.length-1;i++) {
-				renderNewStop(app.state.colorStops[i],app);
-			}	
-		}
-		
-		app.ui.gradientSlider.appendTo(app.ui.parent);
 	}
 
-	function renderNewStop(stop, app) {
+	function renderNewStop(stop, app, index) {
 		var newb = $('<span class="gradSliderHandle" title="Click to modify or delete the gradient stop" />');
 		newb.css('left',stop.percent + '%');
-		app.state.colorStops.push(stop);
-		newb.data('colorStopIndex',  app.state.colorStops.length - 1);
+		
+		if (index) {
+			newb.data('colorStopIndex',  index);
+		} else {
+			app.state.colorStops.push(stop);
+			newb.data('colorStopIndex',  app.state.colorStops.length - 1);
+		}
+		
 		newb.appendTo(app.ui.gradientSlider);
 		newb.click(function (e) {
 			if ($(this).hasClass('noclick')) {
-				$(this).removeClass('noclick')				
+				$(this).removeClass('noclick');
 			} else {
-				HandleClick(app,$(this),true)	
+				HandleClick(app,$(this),true);
 			}
 		});
 
@@ -65,7 +72,8 @@
 				var percent = (parentOffset / width)* 100;
         		stop.percent = percent;
 				UpdateUI(app);
-			}			
+			},
+			stop: function () { setTimeout(function() {$(this).removeClass('noclick')},1);}
 		});
 	}
 
@@ -148,6 +156,17 @@
 			this.each(function () {
             	var app = getApp(this,options);
             	rv.push(app.state.colorStops);
+            });
+            return rv[0];
+		},	
+		setValue : function (options) {
+			var rv = [];
+			this.each(function () {
+            	var app = getApp(this,options);
+            	app.state.colorStops = options.colorStops;
+            	app.ui.gradientSlider.html('');
+            	renderStops(app);
+            	UpdateUI(app);
             });
             return rv[0];
 		},	

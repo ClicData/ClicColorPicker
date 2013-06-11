@@ -30,7 +30,7 @@
 	function drawGradientSlider(app) {
 		app.ui.gradientSlider = $('<div></div>').ClicGradientSlider({
 			requestingColor: function (callback,oldColor,showDelete) {SliderRequestsColor(callback,app,oldColor,showDelete);}
-		});
+		});	
 
 		app.ui.gradientSlider.appendTo(app.ui.gradientPicker);
 	}
@@ -124,10 +124,12 @@
 		// presets 
 		var presetRow = $('<div class="row"></div>');
 		var presetLabel = $("<label>Presets</label>");
-		var presetControl = $("<b></b>");
+		app.ui.presetControl = $("<div class='presetPicker' />").ClicPresetPicker({onChange:function (e) {
+			app.ui.gradientSlider.ClicGradientSlider("setValue",{colorStops:e.selected});
+		}});
 		
 		presetLabel.appendTo(presetRow);
-		presetControl.appendTo(presetRow);
+		app.ui.presetControl.appendTo(presetRow);
 		presetRow.appendTo(parent);		
 
 		// add to picker
@@ -147,8 +149,10 @@
 	function UpdateUI(app) {
 		if (app.state.radial) {
 			app.ui.angleRow.hide();
+			app.ui.presetControl.height(210);
 		} else {
 			app.ui.angleRow.show();
+			app.ui.presetControl.height(149);
 		}
 	}
 
