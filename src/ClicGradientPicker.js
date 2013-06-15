@@ -1,30 +1,79 @@
 (function( $ ){
-	function Init(element,app) {
-		drawGradientPicker(app);
-		UpdateUI(app);
+	var _controlName = "ClicGradientPicker";
+	/*
+		Setup jquery stuff 
+	*/
+	var methods = {	
+		getValue:getValue,
+        init : init
+    }
+  
+  	$.fn.ClicGradientPicker = ClicUiLib.createJqueryObject(_controlName, methods);  
+
+	/*
+		Define methods
+	*/
+	function init( options ) {
+        return this.each(function () {
+        	var settings =  {   
+				enableOpacity:false,                       
+	            applyClick:null,
+	            cancelClick:null,
+	            translations: {
+	            	apply:"Apply",
+	            	cancel:"Cancel"
+	            }
+	        }
+			
+			// this merges pased options with default values
+			settings = ClicUiLib.getSettings(settings, options);
+			var startState =  {
+    			settings:settings,
+       			state: {
+       				radial:false,
+       				linearAngle:null
+				},
+				ui: {
+					mainPanel:$(this),
+					gradientPicker:null,
+					gradientSlider:null,
+					linField:null,
+					radField:null,
+					anglePicker:null,
+					angleRow:null
+				}
+   			}
+
+			ClicUiLib.initControl(
+				_controlName,
+				renderControl,
+				startState,
+				this
+			);
+        });
+    }
+
+    function getValue(options) {
+		var rv = [];
+		this.each(function () {
+        	var app = ClicUiLib.getAppData(_controlName, this);
+        	var val = {
+        		isRadial: app.state.radial,
+        		linearAngle: app.state.radial?undefined:app.state.linearAngle,
+        		colorStops: app.ui.gradientSlider.ClicGradientSlider('getValue')
+        	};
+
+        	rv.push(val);
+        });
+        return rv[0];
 	}
 
-
-	function drawCommandRow(app) {
-		var commandRow = $('<div class="commandRow"></div>');
-		var apply = $('<input class="button" type="button" />');
-		apply.val(app.settings.translations.apply);
-		apply.click(function (e) {
-			if (app.settings.applyClick) {
-				app.settings.applyClick(e);
-			}
-		});
-		apply.appendTo(commandRow);
-
-		var cancel = $('<input class="button" type="button" />');
-		cancel.val(app.settings.translations.cancel);
-		cancel.click(function (e) {
-			if (app.settings.cancelClick) {
-				app.settings.cancelClick(e);
-			}
-		});
-		cancel.appendTo(commandRow);
-		commandRow.appendTo(app.ui.gradientPicker);
+	/*
+		Drawing functions
+	*/
+	function renderControl(element,app) {
+		drawGradientPicker(app);
+		UpdateUI(app);
 	}
 
 	function drawGradientSlider(app) {
@@ -74,14 +123,21 @@
 	    return text;
 	}
 
-	function drawForm(app) {
-		var randId = CreateRandomId();
-		var parent = $('<div class="gradForm"></div>');		
-		
-		// radial/linear radio buttons.
-		var radLinRow = $('<div class="row"></div>');
-		var radLinLabel = $('<label>Type</label>');		
-		app.ui.radField = $('<input id="' + randId +'" name="radlin" type="radio"><label for="' + randId + '">Radial</label></input>');
+	function drawRadioButtons(app, parent) {
+		var radLinRow = ClicUiLib.addControl(
+			"div",
+			parent, 
+			{"class":"row"}
+		);
+
+		var radLinLabel = ClicUiLib.addControl(
+			"label",
+			radLinRow, 
+			{},
+			"Type"
+		);
+		 
+		app.ui.radField = drawRadioButton(radLinRow, "Radial");
 		app.ui.radField.click(function () {
 			if($(this).is(':checked')) {
 				app.state.radial = true;
@@ -91,23 +147,31 @@
 		
 		
 		randId = CreateRandomId();
-		app.ui.linField = $('<input id="' + randId +'"  name="radlin" checked="checked" type="radio"><label for="' + randId + '">Linear</label></input>');
+
+		app.ui.linField = drawRadioButton(radLinRow, "Linear"); 
 		app.ui.linField.click(function () {
 			if($(this).is(':checked')) {
 				app.state.radial = false;
 				UpdateUI(app);
 			}
 		});
+	}
 
-		
-		radLinLabel.appendTo(radLinRow);
-		app.ui.radField .appendTo(radLinRow );
-		app.ui.linField.appendTo(radLinRow );
-		radLinRow.appendTo(parent);
-		
-		// angle selector		
-		app.ui.angleRow = $('<div class="row"></div>');
-		var angleLabel = $("<label>Angle</label>");
+	function drawAngleSelector(app, parent) {
+		app.ui.angleRow = ClicUiLib.addControl(
+			"div",
+			parent, 
+			{"class":"row"}
+		);
+
+		var angleLabel = ClicUiLib.addControl(
+			"label",
+			app.ui.angleRow, 
+			{},
+			"Angle"
+		);
+
+		 $("<label>Angle</label>");
 		app.ui.anglePicker = $("<div />").anglepicker({
 			clockwise: false,
 			change: function(e, ui) {
@@ -117,31 +181,70 @@
 			value: 0
 		});
 		
-		angleLabel.appendTo(app.ui.angleRow);
 		app.ui.anglePicker.appendTo(app.ui.angleRow);
-		app.ui.angleRow.appendTo(parent);
+	}
 
+	function drawPresetPicker(app, parent) {
 		// presets 
-		var presetRow = $('<div class="row"></div>');
-		var presetLabel = $("<label>Presets</label>");
+		var presetRow = ClicUiLib.addControl(
+			"div",
+			parent, 
+			{"class":"row"}
+		);
+
+		var presetLabel = ClicUiLib.addControl(
+			"label",
+			presetRow,
+			{},
+			"Presets"
+		);
+
+		 $("<label>Presets</label>");
 		app.ui.presetControl = $("<div class='presetPicker' />").ClicPresetPicker({onChange:function (e) {
 			app.ui.gradientSlider.ClicGradientSlider("setValue",{colorStops:e.selected});
 		}});
 		
-		presetLabel.appendTo(presetRow);
 		app.ui.presetControl.appendTo(presetRow);
-		presetRow.appendTo(parent);		
+	}
 
-		// add to picker
-		parent.appendTo(app.ui.gradientPicker);
+	function drawForm(app) {
+		var parent = ClicUiLib.addControl(
+			"div",
+			app.ui.gradientPicker, 
+			{"class":"gradForm"}
+		);
+		
+		drawRadioButtons(app, parent);
+		drawAngleSelector(app, parent);
+		drawPresetPicker(app, parent);
+	}
+
+	function drawRadioButton(parent, text) {
+		var randId = CreateRandomId();
+		var rv = ClicUiLib.addControl(
+			"input",
+			parent, 
+			{"id":randId,"name":"radlin","type":"radio"}
+		);
+
+		var lbl = ClicUiLib.addControl(
+			"label",
+			parent, 
+			{"for":randId},
+			text
+		);
+
+		return rv;
 	}
 
 	function drawGradientPicker(app) {
-		app.ui.gradientPicker = $('<div></div>');
+		app.ui.gradientPicker = ClicUiLib.addControl(
+			"div",
+			app.ui.mainPanel
+		);
 		drawGradientSlider(app);
 		drawForm(app);
-		drawCommandRow(app);
-		app.ui.gradientPicker.appendTo(app.ui.mainPanel);
+		ClicUiLib.drawCommandRow(app, app.ui.gradientPicker);
 	}
 
 	
@@ -150,88 +253,11 @@
 		if (app.state.radial) {
 			app.ui.angleRow.hide();
 			app.ui.presetControl.height(210);
+			app.ui.radField.prop("checked", true)
 		} else {
 			app.ui.angleRow.show();
 			app.ui.presetControl.height(149);
+			app.ui.linField.prop("checked", true)
 		}
 	}
-
-
-	//--------------//
-	// 
-	// Jquery control setup code
-	//
-	//--------------//
-
-	function getSettings(options) {
-		return $.extend( {   
-			enableOpacity:false,                       
-            applyClick:null,
-            cancelClick:null,
-            translations: {
-            	apply:"Apply",
-            	cancel:"Cancel"
-            }
-        }, options);
-	}
-
-	function getApp(control,options) {
-		var app = $(control).data('ClicGradientPicker');
-    	if (!app) {
-    		var settings = getSettings(options)
-    		$(control).data('ClicGradientPicker', {
-    			settings:settings,
-       			state: {
-       				radial:false,
-       				linearAngle:null
-				},
-				ui: {
-					mainPanel:$(control),
-					gradientPicker:null,
-					gradientSlider:null,
-					linField:null,
-					radField:null,
-					anglePicker:null,
-					angleRow:null
-				}
-   			});
-
-			app = $(control).data('ClicGradientPicker');
-    	}
-    	return app;
-	}	
-
-	var methods = {	
-		getValue : function (options) {
-			var rv = [];
-			this.each(function () {
-            	var app = getApp(this,options);
-            	var val = {
-            		isRadial: app.state.radial,
-            		linearAngle: app.state.radial?undefined:app.state.linearAngle,
-            		colorStops: app.ui.gradientSlider.ClicGradientSlider('getValue')
-            	};
-
-            	rv.push(val);
-            });
-            return rv[0];
-		},
-        init : function( options ) {
-            return this.each(function () {
-            	var app = getApp(this,options);
-            	Init(this,app);
-            });
-        }
-    }
-
-  $.fn.ClicGradientPicker = function(method) {
-  	// Method calling logic
-	if ( methods[method] ) {
-		return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-	} else if ( typeof method === 'object' || ! method ) {
-		return methods.init.apply( this, arguments );
-	} else {
-		$.error( 'Method ' +  method + ' does not exist on ClicGradientPicker' );
-	}
-  };
 })( jQuery );

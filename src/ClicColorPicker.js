@@ -1,6 +1,68 @@
 (function( $ ){
 	var _us = [];
-	function Init(element,app) {
+
+	/*
+		Setup jquery stuff and defaults
+	*/
+	var methods = {	
+        init : init
+    }
+
+	$.fn.ClicColorPicker = ClicUiLib.createJqueryObject('ClicColorPicker', methods);
+
+
+	/*
+		Define methods
+	*/
+	function init(options) {
+		return this.each(function () {
+			var settings =  {  // default values
+		    	startColor:'#FFFFFF',
+		        type:'simple', // can be full, simple, or gradient
+		        enableOpacity:false, //determines whether opacity selection is enabled
+		        defaultPalette:'websafe', // which palette is selected by defaul, only applies to simple mode
+		        openerCssClass:"", // css class for the element that opens the panel
+		        mainPanelCssClass:"",
+		        onChanged:null
+		    }
+			
+			// this merges pased options with default values
+			settings = ClicUiLib.getSettings(settings, options);
+			var startState = {
+    			settings:settings,
+       			state: {
+       				mainPanelVisible:false,
+					selectedColor: StringToObject(settings.startColor),
+					oldValue:StringToObject(settings.startColor),
+					simplePaletteIndex:0,
+					selectedGradient: null
+				},
+				ui: {
+					opener:null,
+					previewArea:null,
+					arrowArea:null,
+					mainPanel:null,
+					simplePicker:null,
+					fullPicker:null,
+					gradientPicker:null
+				}
+   			}
+
+			ClicUiLib.initControl(
+				'ClicColorPicker',
+				renderControl,
+				startState,
+				this
+			);
+
+			_us.push(startState);
+		});
+	}
+
+	/*
+		Drawing functions
+	*/
+	function renderControl(element,app) {
 		// draw ui
 		drawOpener(element,app);
 		drawMainPanel(app);
@@ -12,23 +74,33 @@
 	}
 
 	function drawOpener(element,app) {
-		app.ui.opener = $("<span class='unselectable opener'></span>");
-		app.ui.opener.addClass(app.settings.openerCssClass);
+		var css = 'unselectable opener' + app.settings.openerCssClass;
+		app.ui.opener = ClicUiLib.addControl("span",$(element).parent(), {"class":css});
 
-		app.ui.previewArea = $("<span class='smallPreview'></span>");
-		app.ui.previewArea.appendTo(app.ui.opener);
+		app.ui.previewArea =  ClicUiLib.addControl(
+			"span",
+			app.ui.opener, 
+			{"class":"smallPreview"}
+		);
 		
-		app.ui.arrowArea = $("<span class='arrowArea'>&#x25BC;</span>");
-		app.ui.arrowArea.appendTo(app.ui.opener);
+		app.ui.arrowArea = ClicUiLib.addControl(
+			"span",
+			app.ui.opener, 
+			{"class":"arrowArea"},
+			"&#x25BC;"
+		);
 
-		app.ui.opener.appendTo($(element).parent());
 		$(element).hide();
 	}
 
 	function drawMainPanel(app) {
-		app.ui.mainPanel = $('<div class="mainPanel"></div>');
-		app.ui.mainPanel.addClass(app.settings.mainPanelCssClass);
-		app.ui.mainPanel.appendTo($('body'));
+		var css = "mainPanel " + app.settings.mainPanelCssClass
+		app.ui.mainPanel = ClicUiLib.addControl(
+			"div",
+			$('body'), 
+			{"class":css}
+		);
+
 		app.ui.mainPanel.hide();
 
 		if (app.settings.type == 'gradient') { 
@@ -155,63 +227,4 @@
 		app.ui.mainPanel.css('top',top);
 		app.ui.mainPanel.css('left',left);
 	}
-
-
-	var methods = {
-        init : function( options ) {
-            var settings = $.extend( {
-            	startColor:'#FFFFFF',
-                type:'simple', // can be full, simple, or gradient
-                enableOpacity:false, //determines whether opacity selection is enabled
-                defaultPalette:'websafe', // which palette is selected by defaul, only applies to simple mode
-                openerCssClass:"", // css class for the element that opens the panel
-                mainPanelCssClass:"",
-                onChanged:null
-            }, options);
-
-
-            return this.each(function () {
-            	var app = $(this).data('ClicColorPicker');
-            	if (!app) {
-            		$(this).data('ClicColorPicker', {
-            			settings:settings,
-               			state: {
-               				mainPanelVisible:false,
-							selectedColor: StringToObject(settings.startColor),
-							oldValue:StringToObject(settings.startColor),
-							simplePaletteIndex:0,
-							selectedGradient: null
-						},
-						ui: {
-							opener:null,
-							previewArea:null,
-							arrowArea:null,
-							mainPanel:null,
-							simplePicker:null,
-							fullPicker:null,
-							gradientPicker:null
-						}
-           			});
-					app = $(this).data('ClicColorPicker');
-					_us.push(app);
-           			Init(this,app);
-            	}
-
-                
-            });
-
-
-        }
-    }
-
-  $.fn.ClicColorPicker = function(method) {
-  	// Method calling logic
-	if ( methods[method] ) {
-		return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-	} else if ( typeof method === 'object' || ! method ) {
-		return methods.init.apply( this, arguments );
-	} else {
-		$.error( 'Method ' +  method + ' does not exist on ClicColorPicker' );
-	}
-  };
 })( jQuery );

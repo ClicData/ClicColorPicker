@@ -1,7 +1,69 @@
 (function( $ ){
-	
+	var _controlName = "ColorTextBox";
+	/*
+		Setup jquery stuff and defaults
+	*/
 
-	function Init(element,app) {
+	var methods = {	
+        init : init,
+        setValue : setValue
+    }
+
+	$.fn.ColorTextBox = ClicUiLib.createJqueryObject(_controlName, methods);
+
+
+	/*
+		Define methods
+	*/
+	function init(options) {
+		return this.each(function () {
+			var settings = {
+	        	startColor: StringToObject('#FFFFFF'),
+	        	enableOpacity:false,
+	        	valueChanged:null       
+	        }
+			
+			// this merges pased options with default values
+			settings = ClicUiLib.getSettings(settings, options);
+			var startState = {
+    			settings:settings,
+       			state: {
+					selectedColor:settings.startColor,
+					selectedOpacity:null
+				},
+				ui: {
+					container:$(this),					
+					previewArea:null,
+					textBox:null
+				}
+   			}
+
+			ClicUiLib.initControl(
+				_controlName,
+				renderControl,
+				startState,
+				this
+			);
+		});
+	}
+
+	function setValue(newVal) {
+		return this.each(function () {
+        	var app = ClicUiLib.getAppData(_controlName,this); 
+        	if (newVal === newVal.toString()) {
+				app.state.selectedColor = StringToObject(newVal);
+        	} else {
+        		app.state.selectedColor = newVal;
+        	}
+    		
+    		UpdateUI(app);        	
+        });
+	}
+
+	/*
+		Drawing functions
+	*/
+	function renderControl(element,app) {
 		drawColorTextBox(app);
 		UpdateUI(app);
 	}
@@ -9,14 +71,31 @@
 	
 
 	function drawColorTextBox(app) {	
-		var parent = $("<div class='colorTBParent'></div>")	
-		var bg =  $('<span class="colorTBBackground"></span>');
-		bg.appendTo(parent);
+		var parent = ClicUiLib.addControl(
+			"div",
+			app.ui.container, 
+			{"class":"colorTBParent"}
+		);
 
-		app.ui.previewArea =  $('<span class="colorTBPreview"></span>');
-		app.ui.previewArea.appendTo(parent);
+		 
+		var bg = ClicUiLib.addControl(
+			"span",
+			parent, 
+			{"class":"colorTBBackground"}
+		);
 
-		app.ui.textBox =  $('<input type="text" class="colorTBInput" />');		
+		app.ui.previewArea = ClicUiLib.addControl(
+			"span",
+			parent, 
+			{"class":"colorTBPreview"}
+		);
+
+		app.ui.textBox = ClicUiLib.addControl(
+			"input",
+			parent, 
+			{"class":"colorTBInput", "type":"text"}
+		);
+
 		app.ui.textBox.blur(function (e) {textBoxChanged(app);});
 		app.ui.textBox.keyup(function (e) {
 			 if(e.which == 9 || e.which == 13) {
@@ -24,10 +103,7 @@
 		        $(this).blur();
 		        e.preventDefault();
 		    }
-		})
-		app.ui.textBox.appendTo(parent);
-
- 		parent.appendTo(app.ui.container);
+		});
 	}
 
 	function textBoxChanged(app) {
@@ -64,74 +140,4 @@
 		app.ui.previewArea.css('background',str);
 		app.ui.textBox.val(str);
 	}
-
-
-	//--------------//
-	// 
-	// Jquery control setup code
-	//
-	//--------------//
-
-	function getSettings(options) {
-		return $.extend( {
-        	startColor: StringToObject('#FFFFFF'),
-        	enableOpacity:false,
-        	valueChanged:null       
-        }, options);
-	}
-
-	function getApp(control,options) {
-		var app = $(control).data('ColorTextBox');
-    	if (!app) {
-    		var settings = getSettings(options);
-    		$(control).data('ColorTextBox', {
-    			settings:settings,
-       			state: {
-					selectedColor:settings.startColor,
-					selectedOpacity:null
-				},
-				ui: {
-					container:$(control),					
-					previewArea:null,
-					textBox:null
-				}
-   			});
-
-			app = $(control).data('ColorTextBox');
-    	}
-    	return app;
-	}
-
-	var methods = {		
-		setValue:function (newVal) {
-			return this.each(function () {
-            	var app = getApp(this); 
-            	if (newVal === newVal.toString()) {
-					app.state.selectedColor = StringToObject(newVal);
-            	} else {
-            		app.state.selectedColor = newVal;
-            	}
-        		
-        		UpdateUI(app);        	
-            });
-            
-		},
-        init : function( options ) {
-            return this.each(function () {
-            	var app = getApp(this,options);
-            	Init(this,app);
-            });
-        }
-    }
-
-  $.fn.ColorTextBox = function(method) {
-  	// Method calling logic
-	if ( methods[method] ) {
-		return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-	} else if ( typeof method === 'object' || ! method ) {
-		return methods.init.apply( this, arguments );
-	} else {
-		$.error( 'Method ' +  method + ' does not exist on ColorTextBox' );
-	}
-  };
 })( jQuery );

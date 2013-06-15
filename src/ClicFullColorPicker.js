@@ -1,5 +1,86 @@
 (function( $ ){
-	function Init(element,app) {
+	var _controlName = "ClicFullPicker";
+	/*
+		Setup jquery stuff 
+	*/
+	var methods = {	
+		getColor:getColor,
+        init : init
+    }
+  
+  	$.fn.ClicFullPicker = ClicUiLib.createJqueryObject(_controlName, methods);  
+
+	/*
+		Define methods
+	*/
+	function init( options ) {
+        return this.each(function () {
+        	var settings =  {
+	        	startColor: {r:255,g:255,b:255,a:1},
+	        	enableOpacity:false,
+	        	opacity:1,
+	            mainPanelCssClass:"",
+	            showDelete:false,
+	            deleteClick:null,
+	            applyClick:null,
+	            cancelClick:null,
+	            translations: {
+	            	apply:"Apply",
+	            	cancel:"Cancel",
+	            	delete:"Delete"
+	            }
+	        }
+
+	        if (!settings.startColor) {
+				settings.startColor = {r:255,g:255,b:255,a:1};
+			}
+
+			var hsl = RGBToHSL(settings.startColor)
+			if (settings.startColor.a) {settings.opacity = settings.startColor.a;}
+			
+			// this merges pased options with default values
+			settings = ClicUiLib.getSettings(settings, options);
+			var startState =  {
+    			settings:settings,
+       			state: {					
+					selectedHue:hsl.h,
+					selectedSaturation:hsl.s,
+					selectedLightness:hsl.l,
+					selectedOpacity:settings.opacity,
+					mouseIsDown:false
+				},
+				ui: {
+					mainPanel:$(this),
+					colorTextBox:null,
+					fullPicker:null,
+					lightnessLines: new Array(100),					
+					hueSlider:null,
+					crosshair:null
+				}
+   			}
+
+			ClicUiLib.initControl(
+				_controlName,
+				renderControl,
+				startState,
+				this
+			);
+        });
+    }
+
+    function getColor(options) {
+		var rv = []
+		this.each(function () {
+        	var app = ClicUiLib.getAppData(_controlName, this);
+        	rv.push(getSelectedColor(app));
+        });
+        return rv[0];
+	}
+
+	/*
+		Drawing functions
+	*/
+	function renderControl(element,app) {
 		drawFullPicker(app);		
 		setTimeout(function(){UpdateUI(app)},1); // finish render before setting ui
 
@@ -14,30 +95,6 @@
 		}
 		return rv;	
 	}
-
-	function drawCommandRow(app) {
-		var commandRow = $('<div class="commandRow"></div>');
-			var apply = $('<input class="button" type="button" />');
-			apply.val(app.settings.translations.apply);
-			apply.click(function (e) {
-				if (app.settings.applyClick) {
-					app.settings.applyClick(e);
-				}
-			});
-			apply.appendTo(commandRow);
-
-			var cancel = $('<input class="button" type="button" />');
-			cancel.val(app.settings.translations.cancel);
-			cancel.click(function (e) {
-				if (app.settings.cancelClick) {
-					app.settings.cancelClick(e);
-				}
-			});
-			cancel.appendTo(commandRow);
-			commandRow.appendTo(app.ui.fullPicker );
-	}
-
-
 
 	function drawTextInput(app) {
 		var textRow = $('<div class="textRow"></div>');
@@ -181,7 +238,7 @@
 		}
 		drawTextInput(app);
 		drawPicker(app)
-		drawCommandRow(app);
+		ClicUiLib.drawCommandRow(app, app.ui.fullPicker);
 		app.ui.fullPicker.appendTo(app.ui.mainPanel);
 	}
 
@@ -231,95 +288,4 @@
 			ApplyGradientBackground(app.ui.lightnessLines[i],90,gradients)
 		}	
 	}
-
-
-	//--------------//
-	// 
-	// Jquery control setup code
-	//
-	//--------------//
-
-	function getSettings(options) {
-		var rv = $.extend( {
-        	startColor: {r:255,g:255,b:255,a:1},
-        	enableOpacity:false,
-        	opacity:1,
-            mainPanelCssClass:"",
-            showDelete:false,
-            deleteClick:null,
-            applyClick:null,
-            cancelClick:null,
-            translations: {
-            	apply:"Apply",
-            	cancel:"Cancel",
-            	delete:"Delete"
-            }
-        }, options);
-
-		if (!rv.startColor) {
-			rv.startColor = {r:255,g:255,b:255,a:1};
-		}
-		
-
-        return rv;
-	}
-
-	function getApp(control,options) {
-		var app = $(control).data('ClicFullPicker');
-    	if (!app) {
-			var settings = getSettings(options);			
-			var hsl = RGBToHSL(settings.startColor)
-			if (settings.startColor.a) {settings.opacity = settings.startColor.a;}
-
-    		$(control).data('ClicFullPicker', {
-    			settings:settings,
-       			state: {					
-					selectedHue:hsl.h,
-					selectedSaturation:hsl.s,
-					selectedLightness:hsl.l,
-					selectedOpacity:settings.opacity,
-					mouseIsDown:false
-				},
-				ui: {
-					mainPanel:$(control),
-					colorTextBox:null,
-					fullPicker:null,
-					lightnessLines: new Array(100),					
-					hueSlider:null,
-					crosshair:null
-				}
-   			});
-
-			app = $(control).data('ClicFullPicker');
-    	}
-    	return app;
-	}
-
-	var methods = {
-		getColor:function (options) {
-			var rv = []
-			this.each(function () {
-            	var app = getApp(this);
-            	rv.push(getSelectedColor(app));
-            });
-            return rv[0];
-		},
-        init : function( options ) {
-            return this.each(function () {
-            	var app = getApp(this,options);
-            	Init(this,app);
-            });
-        }
-    }
-
-  $.fn.ClicFullPicker = function(method) {
-  	// Method calling logic
-	if ( methods[method] ) {
-		return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-	} else if ( typeof method === 'object' || ! method ) {
-		return methods.init.apply( this, arguments );
-	} else {
-		$.error( 'Method ' +  method + ' does not exist on ClicFullPicker' );
-	}
-  };
 })( jQuery );

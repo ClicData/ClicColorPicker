@@ -1,5 +1,52 @@
 (function( $ ){
-	function Init(element,app) {
+	var _controlName = "ClicPresetPicker";
+	/*
+		Setup jquery stuff and defaults
+	*/
+
+	var methods = {	
+        init : init
+    }
+
+	$.fn.ClicPresetPicker = ClicUiLib.createJqueryObject(_controlName, methods);
+
+
+	/*
+		Define methods
+	*/
+	function init(options) {
+		return this.each(function () {
+			var settings =  {
+	            onChange:null,
+	            options:gradientPresets
+	        }
+			
+			// this merges pased options with default values
+			settings = ClicUiLib.getSettings(settings, options);
+			var startState = {
+    			settings:settings,
+       			state: {
+       				selectedPresetIndex:null
+				},
+				ui: {
+					mainPanel:$(this)
+				}
+   			}
+
+			ClicUiLib.initControl(
+				_controlName,
+				renderControl,
+				startState,
+				this
+			);
+		});
+	}
+
+	/*
+		Drawing functions
+	*/
+
+	function renderControl(element,app) {
 		drawPresetPicker(app);
 		UpdateUI(app);
 	}
@@ -30,57 +77,4 @@
 	function UpdateUI(app) {
 		
 	}
-
-
-	//--------------//
-	// 
-	// Jquery control setup code
-	//
-	//--------------//
-
-	function getSettings(options) {
-		return $.extend( {
-            onChange:null,
-            options:gradientPresets
-        }, options);
-	}
-
-	function getApp(control,options) {
-		var app = $(control).data('ClicPresetPicker');
-    	if (!app) {
-    		var settings = getSettings(options)
-    		$(control).data('ClicPresetPicker', {
-    			settings:settings,
-       			state: {
-       				selectedPresetIndex:null
-				},
-				ui: {
-					mainPanel:$(control)
-				}
-   			});
-
-			app = $(control).data('ClicPresetPicker');
-    	}
-    	return app;
-	}	
-
-	var methods = {	
-        init : function( options ) {
-            return this.each(function () {
-            	var app = getApp(this,options);
-            	Init(this,app);
-            });
-        }
-    }
-
-  $.fn.ClicPresetPicker = function(method) {
-  	// Method calling logic
-	if ( methods[method] ) {
-		return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-	} else if ( typeof method === 'object' || ! method ) {
-		return methods.init.apply( this, arguments );
-	} else {
-		$.error( 'Method ' +  method + ' does not exist on ClicPresetPicker' );
-	}
-  };
 })( jQuery );
