@@ -55,7 +55,13 @@
 
 	function drawPresetPicker(app) {
 		for (var i = 0; i < app.settings.options.length; i++) {
-			var option = $('<div class="presetOption"></div>');
+			var option = ClicUiLib.addControl(
+			"div",
+			app.ui.mainPanel, 
+			{"class":"presetOption"}
+		);
+
+
 			option.data('index',i.toString());
 			option.click(function () {
 				app.state.selectedPresetIndex = $(this).data('index');
@@ -65,11 +71,7 @@
 			});
 
 			ApplyGradientBackground(option,45,app.settings.options[i],false);
-			option.appendTo(app.ui.mainPanel);
 		}
-
-
-		app.ui.mainPanel.appendTo(app.ui.mainPanel);
 	}
 
 	

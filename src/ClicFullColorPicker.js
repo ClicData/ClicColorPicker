@@ -31,15 +31,16 @@
 	            }
 	        }
 
-	        if (!settings.startColor) {
+			// this merges pased options with default values
+			settings = ClicUiLib.getSettings(settings, options);
+
+			if (!settings.startColor) {
 				settings.startColor = {r:255,g:255,b:255,a:1};
 			}
 
 			var hsl = RGBToHSL(settings.startColor)
 			if (settings.startColor.a) {settings.opacity = settings.startColor.a;}
-			
-			// this merges pased options with default values
-			settings = ClicUiLib.getSettings(settings, options);
+
 			var startState =  {
     			settings:settings,
        			state: {					
@@ -97,7 +98,12 @@
 	}
 
 	function drawTextInput(app) {
-		var textRow = $('<div class="textRow"></div>');
+		var textRow = ClicUiLib.addControl(
+			"div",
+			app.ui.fullPicker, 
+			{"class":"textRow"}
+		);
+
 		app.ui.colorTextBox = textRow.ColorTextBox({
 			startColor:getSelectedColor(app),
 			enableOpacity:app.settings.enableOpacity,
@@ -110,22 +116,29 @@
 				UpdateUI(app);
 			}
 		});
-		
-		if (app.settings.showDelete) {
-
-		}
-
- 		textRow.appendTo(app.ui.fullPicker );
 	}
 	
 	function drawPicker(app) {
-		var fullArea = $('<div class="fullArea"></div>');
+		var fullArea = ClicUiLib.addControl(
+			"div",
+			app.ui.fullPicker, 
+			{"class":"fullArea"}
+		);
 
-		var satAndLightness = $('<div class="satAndLightnessArea"></div>');
+		var satAndLightness = ClicUiLib.addControl(
+			"div",
+			fullArea, 
+			{"class":"satAndLightnessArea"}
+		);
+
 		for (var i = 0; i<100; i++) {
-			app.ui.lightnessLines[i] = $('<div class="lightnessLine"/>');
+			app.ui.lightnessLines[i] = ClicUiLib.addControl(
+				"div",
+				satAndLightness, 
+				{"class":"lightnessLine"}
+			);
+
 			app.ui.lightnessLines[i].data("lightness",100-i);
-			app.ui.lightnessLines[i].appendTo(satAndLightness);
 			app.ui.lightnessLines[i].click(function () {
 				app.state.selectedLightness = $(this).data("lightness");
 			}).mousedown(function (e) {
@@ -154,14 +167,11 @@
 			app.state.mouseIsDown = false;
 		})
 
-		satAndLightness.appendTo(fullArea);
 		drawHueSlider(app,fullArea);
 
 		if (app.settings.enableOpacity) {
 			drawOpacitySlider(app,fullArea);
 		}
-
-		fullArea.appendTo(app.ui.fullPicker);		
 	}
 
 	function ChangeSatAndLightness(e,app,satAndLightness) {
@@ -186,9 +196,11 @@
 		   	}
 		});		
 
-		var sliderContainer = $('<div></div>');
+		var sliderContainer = ClicUiLib.addControl(
+			"div",
+			fullArea
+		);
 		app.ui.opacitySlider.appendTo(sliderContainer);
-		sliderContainer.appendTo(fullArea);
 	}
 
 	function drawHueSlider(app,fullArea) {
@@ -216,30 +228,37 @@
 
 		ApplyGradientBackground(app.ui.hueSlider,90,hueGradient)
 
-		var sliderContainer = $('<div></div>');
+		var sliderContainer =ClicUiLib.addControl(
+			"div",
+			fullArea
+		);
 		app.ui.hueSlider.appendTo(sliderContainer);
-		sliderContainer.appendTo(fullArea);
 	}
 
 	function drawDeleteButton(app) {
-		var delBtn = $('<input class="delete" type="button" />');
+		var delBtn = ClicUiLib.addControl(
+			"input",
+			app.ui.fullPicker, 
+			{"class":"delete","type":"button"}
+		);
+
 		delBtn.val(app.settings.translations.delete);
 		delBtn.click(function() {
 			if (app.settings.deleteClick) {app.settings.deleteClick();}
 		});
-
-		delBtn.appendTo(app.ui.fullPicker);
 	}
 
 	function drawFullPicker(app) {
-		app.ui.fullPicker = $('<div></div>');
+		app.ui.fullPicker = ClicUiLib.addControl(
+			"div",
+			app.ui.mainPanel
+		);
 		if (app.settings.showDelete) {
 			drawDeleteButton(app);
 		}
 		drawTextInput(app);
 		drawPicker(app)
 		ClicUiLib.drawCommandRow(app, app.ui.fullPicker);
-		app.ui.fullPicker.appendTo(app.ui.mainPanel);
 	}
 
 

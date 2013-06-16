@@ -88,8 +88,18 @@
 	}
 
 	function drawButtonRow(app) {
-		var buttonRow = $('<div class="buttonRow"></div>');
-		var prev = $('<input type="button" class="button" value="&#x00AB;" />');				
+		var buttonRow = ClicUiLib.addControl(
+			"div",
+			app.ui.simplePicker, 
+			{"class":"buttonRow"}
+		);
+
+		var prev = ClicUiLib.addControl(
+			"input",
+			buttonRow, 
+			{"class":"button", "type":"button","value":"&#x00AB;"}
+		);
+
 		prev.click(function () {
 			if (app.state.paletteIndex == 0) {
 				app.state.paletteIndex  = app.settings.simplePalettes.length - 1;
@@ -100,12 +110,17 @@
 			UpdateUI(app);
 		});
 
-		prev.appendTo(buttonRow);
+		app.ui.paletteLabel = ClicUiLib.addControl(
+			"span",
+			buttonRow, 
+			{"class":"paletteName"}
+		);
 
-		app.ui.paletteLabel = $('<span class="paletteName"></span>');				
-		app.ui.paletteLabel.appendTo(buttonRow);
-
-		var next = $('<input type="button" class="button" value="&#x00BB;" />');				
+		var next = ClicUiLib.addControl(
+			"input",
+			buttonRow, 
+			{"class":"button", "type":"button","value":"&#x00BB;"}
+		);
 		next.click(function () {
 			if (app.state.paletteIndex == (app.settings.simplePalettes.length - 1)) {
 				app.state.paletteIndex  = 0;
@@ -115,20 +130,32 @@
 
 			UpdateUI(app);
 		});
-
-		next.appendTo(buttonRow);
-		buttonRow.appendTo(app.ui.simplePicker);
 	}
 
 	function drawSampleAreas(app) {
-		var sampleAreas = $('<div class="sampleAreas"></div>');
+		var sampleAreas = ClicUiLib.addControl(
+			"div",
+			app.ui.simplePicker, 
+			{"class":"sampleAreas"}
+		);
+
 		for (var i=0;i < app.settings.simplePalettes.length;i++) {
 			var palette = app.settings.simplePalettes[i];
 			
+			var sampleArea = ClicUiLib.addControl(
+				"div",
+				sampleAreas, 
+				{"class":"sampleArea"}
+			);
 
-			var sampleArea = $('<div class="sampleArea"></div>');
 			for (var j=0;j < palette.values.length;j++) {
-				var sample = $('<span class="sample"></span>');
+				var sample = ClicUiLib.addControl(
+					"span",
+					sampleArea, 
+					{"class":"sample"}
+				);
+
+				 $('<span class="sample"></span>');
 				sample.data('color',palette.values[j]);
 				sample.css('background-color',palette.values[j]);
 
@@ -137,14 +164,8 @@
 					app.state.selectedColor = StringToObject($(this).data('color'));
 					UpdateUI(app);
 				});
-
-				sample.appendTo(sampleArea);
 			}
-
-			sampleArea.appendTo(sampleAreas);
 		}
-
-		sampleAreas.appendTo(app.ui.simplePicker);
 	}
 		
 	function drawTextInput(app) {
@@ -161,12 +182,14 @@
 	
 
 	function drawSimplePicker(app) {
-		app.ui.simplePicker = $('<div></div>');
+		app.ui.simplePicker = ClicUiLib.addControl(
+			"div",
+			app.ui.mainPanel
+		);
 		drawTextInput(app);
 		drawSampleAreas(app);
 		drawButtonRow(app);
 		ClicUiLib.drawCommandRow(app, app.ui.simplePicker);
-		app.ui.simplePicker.appendTo(app.ui.mainPanel);
 	}
 
 	

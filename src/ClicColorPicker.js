@@ -1,6 +1,6 @@
 (function( $ ){
 	var _us = [];
-
+	var _controlName = "ClicColorPicker";
 	/*
 		Setup jquery stuff and defaults
 	*/
@@ -8,7 +8,7 @@
         init : init
     }
 
-	$.fn.ClicColorPicker = ClicUiLib.createJqueryObject('ClicColorPicker', methods);
+	$.fn.ClicColorPicker = ClicUiLib.createJqueryObject(_controlName, methods);
 
 
 	/*
@@ -49,7 +49,7 @@
    			}
 
 			ClicUiLib.initControl(
-				'ClicColorPicker',
+				_controlName,
 				renderControl,
 				startState,
 				this
