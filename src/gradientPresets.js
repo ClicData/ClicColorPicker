@@ -345,24 +345,6 @@ ClicColorLib.Data.gradientPresets =
             {
             percent:0,
             color: {
-                r:255,
-                g:255,
-                b:255
-            }
-        },
-        {
-            percent:100,
-            color: {
-                r:255,
-                g:255,
-                b:255
-            }
-        }
-    ],
-    [
-            {
-            percent:0,
-            color: {
                 r:0,
                 g:183,
                 b:234
