@@ -8,7 +8,7 @@
         init : init
     }
 
-	$.fn.ClicPresetPicker = ClicUiLib.createJqueryObject(_controlName, methods);
+	$.fn.ClicPresetPicker = ClicColorLib.Ui.createJqueryObject(_controlName, methods);
 
 
 	/*
@@ -18,11 +18,11 @@
 		return this.each(function () {
 			var settings =  {
 	            onChange:null,
-	            options:gradientPresets
+	            options:ClicColorLib.Data.gradientPresets
 	        }
 			
 			// this merges pased options with default values
-			settings = ClicUiLib.getSettings(settings, options);
+			settings = ClicColorLib.Ui.getSettings(settings, options);
 			var startState = {
     			settings:settings,
        			state: {
@@ -33,7 +33,7 @@
 				}
    			}
 
-			ClicUiLib.initControl(
+			ClicColorLib.Ui.initControl(
 				_controlName,
 				renderControl,
 				startState,
@@ -55,7 +55,7 @@
 
 	function drawPresetPicker(app) {
 		for (var i = 0; i < app.settings.options.length; i++) {
-			var option = ClicUiLib.addControl(
+			var option = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.mainPanel, 
 			{"class":"presetOption"}
@@ -70,7 +70,7 @@
 				}
 			});
 
-			ApplyGradientBackground(option,45,app.settings.options[i],false);
+			ClicColorLib.ColorMethods.ApplyGradientBackground(option,45,app.settings.options[i],false);
 		}
 	}
 

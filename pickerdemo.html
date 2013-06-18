@@ -24,7 +24,7 @@
 		<script src="src/jquery-ui-custom-min.js"></script>
 		<script src="src/anglepicker/ui.anglepicker.js"></script>
 		<script src="src/nouislider/jquery.nouislider.js"></script>
-		<script src="src/gradientPresets.js"></script>
+		<script src="src/GradientPresets.js"></script>
 		<script src="src/ColorMethods.js"></script>
 		<script src="src/ColorTextBox.js"></script>
 		<script src="src/ClicFullColorPicker.js"></script>
@@ -44,16 +44,16 @@
 				$('#simple').ClicColorPicker({
 					'startColor':"#c4c4c4",
 					'onChanged': function (e) {
-						$('#preview').css('background',ObjectToRGBAString(e.newValue));
+						$('#preview').css('background',ClicColorLib.ColorMethods.ObjectToRGBAString(e.newValue));
 					}
 				});
 				$('#full').ClicColorPicker({'startColor':"rgb(196, 16, 196)", 'type':'full',enableOpacity:true,
 					'onChanged': function (e) {
-						$('#preview').css('background',ObjectToRGBAString(e.newValue));
+						$('#preview').css('background',ClicColorLib.ColorMethods.ObjectToRGBAString(e.newValue));
 					}});
 				$('#grad').ClicColorPicker({'type':'gradient',enableOpacity:true,
 					'onChanged': function (e) {
-						ApplyGradientBackground($('#preview'),e.newValue.linearAngle, e.newValue.colorStops, e.newValue.isRadial);
+						ClicColorLib.ColorMethods.ApplyGradientBackground($('#preview'),e.newValue.linearAngle, e.newValue.colorStops, e.newValue.isRadial);
 					}
 				});
 			});

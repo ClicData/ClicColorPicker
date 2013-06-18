@@ -1,4 +1,7 @@
-var gradientPresets = 
+var ClicColorLib = ClicColorLib || {};
+ClicColorLib.Data = ClicColorLib.Data || {};
+
+ClicColorLib.Data.gradientPresets = 
 [
     [
        {

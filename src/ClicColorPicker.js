@@ -8,7 +8,7 @@
         init : init
     }
 
-	$.fn.ClicColorPicker = ClicUiLib.createJqueryObject(_controlName, methods);
+	$.fn.ClicColorPicker = ClicColorLib.Ui.createJqueryObject(_controlName, methods);
 
 
 	/*
@@ -27,13 +27,13 @@
 		    }
 			
 			// this merges pased options with default values
-			settings = ClicUiLib.getSettings(settings, options);
+			settings = ClicColorLib.Ui.getSettings(settings, options);
 			var startState = {
     			settings:settings,
        			state: {
        				mainPanelVisible:false,
-					selectedColor: StringToObject(settings.startColor),
-					oldValue:StringToObject(settings.startColor),
+					selectedColor: ClicColorLib.ColorMethods.StringToObject(settings.startColor),
+					oldValue:ClicColorLib.ColorMethods.StringToObject(settings.startColor),
 					simplePaletteIndex:0,
 					selectedGradient: null
 				},
@@ -48,7 +48,7 @@
 				}
    			}
 
-			ClicUiLib.initControl(
+			ClicColorLib.Ui.initControl(
 				_controlName,
 				renderControl,
 				startState,
@@ -75,15 +75,15 @@
 
 	function drawOpener(element,app) {
 		var css = 'unselectable opener' + app.settings.openerCssClass;
-		app.ui.opener = ClicUiLib.addControl("span",$(element).parent(), {"class":css});
+		app.ui.opener = ClicColorLib.Ui.addControl("span",$(element).parent(), {"class":css});
 
-		app.ui.previewArea =  ClicUiLib.addControl(
+		app.ui.previewArea =  ClicColorLib.Ui.addControl(
 			"span",
 			app.ui.opener, 
 			{"class":"smallPreview"}
 		);
 		
-		app.ui.arrowArea = ClicUiLib.addControl(
+		app.ui.arrowArea = ClicColorLib.Ui.addControl(
 			"span",
 			app.ui.opener, 
 			{"class":"arrowArea"},
@@ -95,7 +95,7 @@
 
 	function drawMainPanel(app) {
 		var css = "mainPanel " + app.settings.mainPanelCssClass
-		app.ui.mainPanel = ClicUiLib.addControl(
+		app.ui.mainPanel = ClicColorLib.Ui.addControl(
 			"div",
 			$('body'), 
 			{"class":css}
@@ -204,14 +204,14 @@
 		}
 
 		if (app.settings.type == 'gradient' && app.state.selectedGradient) { 
-			ApplyGradientBackground(
+			ClicColorLib.ColorMethods.ApplyGradientBackground(
 				app.ui.previewArea,
 				app.state.selectedGradient.linearAngle,
 				app.state.selectedGradient.colorStops,
 				app.state.selectedGradient.isRadial				
 			)			
 		} else {
-			app.ui.previewArea.css("background-color", ObjectToRGBAString(app.state.selectedColor));
+			app.ui.previewArea.css("background-color", ClicColorLib.ColorMethods.ObjectToRGBAString(app.state.selectedColor));
 		}
 		
 		

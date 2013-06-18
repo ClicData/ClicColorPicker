@@ -9,7 +9,7 @@
         setValue : setValue
     }
 
-	$.fn.ColorTextBox = ClicUiLib.createJqueryObject(_controlName, methods);
+	$.fn.ColorTextBox = ClicColorLib.Ui.createJqueryObject(_controlName, methods);
 
 
 	/*
@@ -18,13 +18,13 @@
 	function init(options) {
 		return this.each(function () {
 			var settings = {
-	        	startColor: StringToObject('#FFFFFF'),
+	        	startColor: ClicColorLib.ColorMethods.StringToObject('#FFFFFF'),
 	        	enableOpacity:false,
 	        	valueChanged:null       
 	        }
 			
 			// this merges pased options with default values
-			settings = ClicUiLib.getSettings(settings, options);
+			settings = ClicColorLib.Ui.getSettings(settings, options);
 			var startState = {
     			settings:settings,
        			state: {
@@ -38,7 +38,7 @@
 				}
    			}
 
-			ClicUiLib.initControl(
+			ClicColorLib.Ui.initControl(
 				_controlName,
 				renderControl,
 				startState,
@@ -49,9 +49,9 @@
 
 	function setValue(newVal) {
 		return this.each(function () {
-        	var app = ClicUiLib.getAppData(_controlName,this); 
+        	var app = ClicColorLib.Ui.getAppData(_controlName,this); 
         	if (newVal === newVal.toString()) {
-				app.state.selectedColor = StringToObject(newVal);
+				app.state.selectedColor = ClicColorLib.ColorMethods.StringToObject(newVal);
         	} else {
         		app.state.selectedColor = newVal;
         	}
@@ -71,26 +71,26 @@
 	
 
 	function drawColorTextBox(app) {	
-		var parent = ClicUiLib.addControl(
+		var parent = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.container, 
 			{"class":"colorTBParent"}
 		);
 
 		 
-		var bg = ClicUiLib.addControl(
+		var bg = ClicColorLib.Ui.addControl(
 			"span",
 			parent, 
 			{"class":"colorTBBackground"}
 		);
 
-		app.ui.previewArea = ClicUiLib.addControl(
+		app.ui.previewArea = ClicColorLib.Ui.addControl(
 			"span",
 			parent, 
 			{"class":"colorTBPreview"}
 		);
 
-		app.ui.textBox = ClicUiLib.addControl(
+		app.ui.textBox = ClicColorLib.Ui.addControl(
 			"input",
 			parent, 
 			{"class":"colorTBInput", "type":"text"}
@@ -109,9 +109,9 @@
 	function textBoxChanged(app) {
 		var newVal = app.ui.textBox.val();
 
-		if (isColor(newVal)) {
+		if (ClicColorLib.ColorMethods.isColor(newVal)) {
 
-			app.state.selectedColor = StringToObject(newVal);
+			app.state.selectedColor = ClicColorLib.ColorMethods.StringToObject(newVal);
 			UpdateUI(app);
 			app.ui.textBox.removeClass('invalid');
 			if (app.settings.valueChanged) {
@@ -130,10 +130,10 @@
 	function UpdateUI(app) {	
 		var str;
 		if (app.settings.enableOpacity) {
-			str = ObjectToRGBAString(app.state.selectedColor);			
+			str = ClicColorLib.ColorMethods.ObjectToRGBAString(app.state.selectedColor);			
 
 		} else {
-			str = ObjectToRGBString(app.state.selectedColor);
+			str = ClicColorLib.ColorMethods.ObjectToRGBString(app.state.selectedColor);
 			
 		}
 

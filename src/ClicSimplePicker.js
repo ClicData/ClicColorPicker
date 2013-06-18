@@ -8,7 +8,7 @@
         init : init
     }
   
-  	$.fn.ClicSimplePicker = ClicUiLib.createJqueryObject(_controlName, methods);  
+  	$.fn.ClicSimplePicker = ClicColorLib.Ui.createJqueryObject(_controlName, methods);  
 
 	/*
 		Define methods
@@ -39,7 +39,7 @@
 	        }
 
 			// this merges pased options with default values
-			settings = ClicUiLib.getSettings(settings, options);
+			settings = ClicColorLib.Ui.getSettings(settings, options);
 			var startState =  {
     			settings:settings,
        			state: {
@@ -55,7 +55,7 @@
 				}
    			}
 
-			ClicUiLib.initControl(
+			ClicColorLib.Ui.initControl(
 				_controlName,
 				renderControl,
 				startState,
@@ -67,7 +67,7 @@
     function getColor(options) {
 		var rv = []
 		this.each(function () {
-        	var app = ClicUiLib.getAppData(_controlName,this);
+        	var app = ClicColorLib.Ui.getAppData(_controlName,this);
         	rv.push(app.state.selectedColor);
         });
         return rv[0];
@@ -88,13 +88,13 @@
 	}
 
 	function drawButtonRow(app) {
-		var buttonRow = ClicUiLib.addControl(
+		var buttonRow = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.simplePicker, 
 			{"class":"buttonRow"}
 		);
 
-		var prev = ClicUiLib.addControl(
+		var prev = ClicColorLib.Ui.addControl(
 			"input",
 			buttonRow, 
 			{"class":"button", "type":"button","value":"&#x00AB;"}
@@ -110,13 +110,13 @@
 			UpdateUI(app);
 		});
 
-		app.ui.paletteLabel = ClicUiLib.addControl(
+		app.ui.paletteLabel = ClicColorLib.Ui.addControl(
 			"span",
 			buttonRow, 
 			{"class":"paletteName"}
 		);
 
-		var next = ClicUiLib.addControl(
+		var next = ClicColorLib.Ui.addControl(
 			"input",
 			buttonRow, 
 			{"class":"button", "type":"button","value":"&#x00BB;"}
@@ -133,7 +133,7 @@
 	}
 
 	function drawSampleAreas(app) {
-		var sampleAreas = ClicUiLib.addControl(
+		var sampleAreas = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.simplePicker, 
 			{"class":"sampleAreas"}
@@ -142,14 +142,14 @@
 		for (var i=0;i < app.settings.simplePalettes.length;i++) {
 			var palette = app.settings.simplePalettes[i];
 			
-			var sampleArea = ClicUiLib.addControl(
+			var sampleArea = ClicColorLib.Ui.addControl(
 				"div",
 				sampleAreas, 
 				{"class":"sampleArea"}
 			);
 
 			for (var j=0;j < palette.values.length;j++) {
-				var sample = ClicUiLib.addControl(
+				var sample = ClicColorLib.Ui.addControl(
 					"span",
 					sampleArea, 
 					{"class":"sample"}
@@ -161,7 +161,7 @@
 
 				sample.click(function() {					
 					app.ui.selectedSample = $(this)
-					app.state.selectedColor = StringToObject($(this).data('color'));
+					app.state.selectedColor = ClicColorLib.ColorMethods.StringToObject($(this).data('color'));
 					UpdateUI(app);
 				});
 			}
@@ -182,14 +182,14 @@
 	
 
 	function drawSimplePicker(app) {
-		app.ui.simplePicker = ClicUiLib.addControl(
+		app.ui.simplePicker = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.mainPanel
 		);
 		drawTextInput(app);
 		drawSampleAreas(app);
 		drawButtonRow(app);
-		ClicUiLib.drawCommandRow(app, app.ui.simplePicker);
+		ClicColorLib.Ui.drawCommandRow(app, app.ui.simplePicker);
 	}
 
 	

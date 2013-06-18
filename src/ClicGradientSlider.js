@@ -11,7 +11,7 @@
         init : init
     }
 
-	$.fn.ClicGradientSlider = ClicUiLib.createJqueryObject(_controlName, methods);
+	$.fn.ClicGradientSlider = ClicColorLib.Ui.createJqueryObject(_controlName, methods);
 
 
 	/*
@@ -23,10 +23,10 @@
 				requestingColor:null,
 	        	startColorStops:[
 		        	{percent:0,color:{r:0,g:0,b:0,a:1}},
-		        	{percent:100,color:{r:255,g:255,b:255,a:1}},
+		        	{percent:100,color:{r:255,g:255,b:255,a:1}}
 		        ]
 	    	}
-			settings = ClicUiLib.getSettings(settings, options);
+			settings = ClicColorLib.Ui.getSettings(settings, options);
 			var startState = {
 				settings:settings,
 					state: {
@@ -38,7 +38,7 @@
 				}
 			}
 
-			ClicUiLib.initControl(
+			ClicColorLib.Ui.initControl(
 				_controlName,
 				renderControl,
 				startState,
@@ -50,22 +50,22 @@
 	function getValue(options) {
 		var rv = [];
 		this.each(function () {
-			var app = ClicUiLib.getAppData(_controlName,this);
+			var app = ClicColorLib.Ui.getAppData(_controlName,this);
 			rv.push(app.state.colorStops);
 		});
-		return rv[0];
+		if (rv[0]) {return rv[0]};
 	}
 
 	function setValue(options) {
 		var rv = [];
 		this.each(function () {
-	    	var app = ClicUiLib.getAppData(_controlName,this);
+	    	var app = ClicColorLib.Ui.getAppData(_controlName,this);
 	    	app.state.colorStops = options.colorStops;
 	    	app.ui.gradientSlider.html('');
 	    	renderStops(app);
 	    	UpdateUI(app);
 	    });
-	    return rv[0];
+	    if (rv[0]) {return rv[0]};
 	}
 
 
@@ -80,7 +80,7 @@
 
 
 	function drawGradientSlider(app) {
-		app.ui.gradientSlider = ClicUiLib.addControl(
+		app.ui.gradientSlider = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.parent, 
 			{"class":"gradSlider","title":"Click to add a gradient stop"}
@@ -104,12 +104,14 @@
 		// others that may exist
 		if (app.state.colorStops.length>2) {
 			for (var i =1;i<app.state.colorStops.length-1;i++) {
-				renderNewStop(app.state.colorStops[i],app,i);
+				if (app.state.colorStops[i]) {
+				    renderNewStop(app.state.colorStops[i],app,i);					
+				}
 			}	
 		}
 
 		// first stop
-		var zero = ClicUiLib.addControl(
+		var zero = ClicColorLib.Ui.addControl(
 			"span",
 			app.ui.gradientSlider, 
 			{"class":"gradSliderHandle","title":"Click to modify or delete the gradient stop"}
@@ -118,7 +120,7 @@
 		zero.data('colorStopIndex', 0);
 		zero.click(function (e) {HandleClick(app,$(this),false)});
 		// last stop
-		var hundred = ClicUiLib.addControl(
+		var hundred = ClicColorLib.Ui.addControl(
 			"span",
 			app.ui.gradientSlider, 
 			{"class":"gradSliderHandle","title":"Click to modify or delete the gradient stop"}
@@ -129,7 +131,7 @@
 	}
 
 	function renderNewStop(stop, app, index) {
-		var newb = ClicUiLib.addControl(
+		var newb = ClicColorLib.Ui.addControl(
 			"span",
 			app.ui.gradientSlider, 
 			{"class":"gradSliderHandle","title":"Click to modify or delete the gradient stop"}
@@ -181,7 +183,7 @@
 				function (value) {
 					if (value.toString() === "delete") {
 						handle.remove();
-						app.state.colorStops.splice(stopIndex,1);
+						app.state.colorStops[stopIndex] = null;
 					} else {
 						app.state.colorStops[stopIndex].color = value;	
 					}
@@ -196,7 +198,7 @@
 
 	//methods
 	function UpdateUI(app) {
-		ApplyGradientBackground(app.ui.gradientSlider,90,app.state.colorStops);
+		ClicColorLib.ColorMethods.ApplyGradientBackground(app.ui.gradientSlider,90,app.state.colorStops);
 	}
 
 })( jQuery );

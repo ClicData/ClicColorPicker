@@ -8,7 +8,7 @@
         init : init
     }
   
-  	$.fn.ClicFullPicker = ClicUiLib.createJqueryObject(_controlName, methods);  
+  	$.fn.ClicFullPicker = ClicColorLib.Ui.createJqueryObject(_controlName, methods);  
 
 	/*
 		Define methods
@@ -27,18 +27,18 @@
 	            translations: {
 	            	apply:"Apply",
 	            	cancel:"Cancel",
-	            	delete:"Delete"
+	            	del:"Delete"
 	            }
 	        }
 
 			// this merges pased options with default values
-			settings = ClicUiLib.getSettings(settings, options);
+			settings = ClicColorLib.Ui.getSettings(settings, options);
 
 			if (!settings.startColor) {
 				settings.startColor = {r:255,g:255,b:255,a:1};
 			}
 
-			var hsl = RGBToHSL(settings.startColor)
+			var hsl = ClicColorLib.ColorMethods.RGBToHSL(settings.startColor)
 			if (settings.startColor.a) {settings.opacity = settings.startColor.a;}
 
 			var startState =  {
@@ -60,7 +60,7 @@
 				}
    			}
 
-			ClicUiLib.initControl(
+			ClicColorLib.Ui.initControl(
 				_controlName,
 				renderControl,
 				startState,
@@ -72,7 +72,7 @@
     function getColor(options) {
 		var rv = []
 		this.each(function () {
-        	var app = ClicUiLib.getAppData(_controlName, this);
+        	var app = ClicColorLib.Ui.getAppData(_controlName, this);
         	rv.push(getSelectedColor(app));
         });
         return rv[0];
@@ -88,7 +88,7 @@
 	}
 	
 	function getSelectedColor(app) {
-		var rv = HSLToRGB(app.state.selectedHue,app.state.selectedSaturation,app.state.selectedLightness);
+		var rv = ClicColorLib.ColorMethods.HSLToRGB(app.state.selectedHue,app.state.selectedSaturation,app.state.selectedLightness);
 		if (app.settings.enableOpacity) {
 			rv.a = app.state.selectedOpacity;
 		} else {
@@ -98,7 +98,7 @@
 	}
 
 	function drawTextInput(app) {
-		var textRow = ClicUiLib.addControl(
+		var textRow = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.fullPicker, 
 			{"class":"textRow"}
@@ -109,7 +109,7 @@
 			enableOpacity:app.settings.enableOpacity,
 			valueChanged: function (newval) {
 				app.state.selectedOpacity = newval.a;
-				var hsl = RGBToHSL(newval);
+				var hsl = ClicColorLib.ColorMethods.RGBToHSL(newval);
 				app.state.selectedHue = hsl.h;
 				app.state.selectedSaturation = hsl.s;
 				app.state.selectedLightness = hsl.l;
@@ -119,20 +119,20 @@
 	}
 	
 	function drawPicker(app) {
-		var fullArea = ClicUiLib.addControl(
+		var fullArea = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.fullPicker, 
 			{"class":"fullArea"}
 		);
 
-		var satAndLightness = ClicUiLib.addControl(
+		var satAndLightness = ClicColorLib.Ui.addControl(
 			"div",
 			fullArea, 
 			{"class":"satAndLightnessArea"}
 		);
 
 		for (var i = 0; i<100; i++) {
-			app.ui.lightnessLines[i] = ClicUiLib.addControl(
+			app.ui.lightnessLines[i] = ClicColorLib.Ui.addControl(
 				"div",
 				satAndLightness, 
 				{"class":"lightnessLine"}
@@ -196,7 +196,7 @@
 		   	}
 		});		
 
-		var sliderContainer = ClicUiLib.addControl(
+		var sliderContainer = ClicColorLib.Ui.addControl(
 			"div",
 			fullArea
 		);
@@ -206,13 +206,13 @@
 	function drawHueSlider(app,fullArea) {
 
 		var hueGradient = [
-			{percent:0,color:ParseHex("#ff0000")},
-			{percent:17,color:ParseHex("#ffff00")},
-			{percent:33,color:ParseHex("#00ff00")},
-			{percent:50,color:ParseHex("#00ffff")},
-			{percent:67,color:ParseHex("#0000ff")},
-			{percent:83,color:ParseHex("#ff00ff")},
-			{percent:100,color:ParseHex("#ff0000")},
+			{percent:0,color:ClicColorLib.ColorMethods.ParseHex("#ff0000")},
+			{percent:17,color:ClicColorLib.ColorMethods.ParseHex("#ffff00")},
+			{percent:33,color:ClicColorLib.ColorMethods.ParseHex("#00ff00")},
+			{percent:50,color:ClicColorLib.ColorMethods.ParseHex("#00ffff")},
+			{percent:67,color:ClicColorLib.ColorMethods.ParseHex("#0000ff")},
+			{percent:83,color:ClicColorLib.ColorMethods.ParseHex("#ff00ff")},
+			{percent:100,color:ClicColorLib.ColorMethods.ParseHex("#ff0000")}
 		];
 		
 		app.ui.hueSlider = $('<div class="noUiSlider"></div>').noUiSlider({
@@ -226,9 +226,9 @@
 		   	}
 		});		
 
-		ApplyGradientBackground(app.ui.hueSlider,90,hueGradient)
+		ClicColorLib.ColorMethods.ApplyGradientBackground(app.ui.hueSlider,90,hueGradient)
 
-		var sliderContainer =ClicUiLib.addControl(
+		var sliderContainer =ClicColorLib.Ui.addControl(
 			"div",
 			fullArea
 		);
@@ -236,20 +236,20 @@
 	}
 
 	function drawDeleteButton(app) {
-		var delBtn = ClicUiLib.addControl(
+		var delBtn = ClicColorLib.Ui.addControl(
 			"input",
 			app.ui.fullPicker, 
 			{"class":"delete","type":"button"}
 		);
 
-		delBtn.val(app.settings.translations.delete);
+		delBtn.val(app.settings.translations.del);
 		delBtn.click(function() {
 			if (app.settings.deleteClick) {app.settings.deleteClick();}
 		});
 	}
 
 	function drawFullPicker(app) {
-		app.ui.fullPicker = ClicUiLib.addControl(
+		app.ui.fullPicker = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.mainPanel
 		);
@@ -258,7 +258,7 @@
 		}
 		drawTextInput(app);
 		drawPicker(app)
-		ClicUiLib.drawCommandRow(app, app.ui.fullPicker);
+		ClicColorLib.Ui.drawCommandRow(app, app.ui.fullPicker);
 	}
 
 
@@ -271,12 +271,12 @@
 		if (app.ui.opacitySlider) {
 			app.ui.opacitySlider.val(app.state.selectedOpacity);	
 
-			var solid = CloneColor(rgb);		
-			var transparent = CloneColor(rgb);
+			var solid = ClicColorLib.ColorMethods.CloneColor(rgb);		
+			var transparent = ClicColorLib.ColorMethods.CloneColor(rgb);
 			solid.a = 1;
 			transparent.a = 0
 
-			app.ui.opacitySlider.css('background',"linear-gradient(90deg," + ObjectToRGBAString(transparent) + "," + ObjectToRGBAString(solid) + ") , url('images/transparent.png') repeat");		
+			app.ui.opacitySlider.css('background',"linear-gradient(90deg," + ClicColorLib.ColorMethods.ObjectToRGBAString(transparent) + "," + ClicColorLib.ColorMethods.ObjectToRGBAString(solid) + ") , url('images/transparent.png') repeat");		
 		}
 		
 		var offset = 6;
@@ -294,9 +294,9 @@
 		var full;
 		for (var i = 0; i<app.ui.lightnessLines.length; i++) {
 			lightness = app.ui.lightnessLines[i].data('lightness');
-			empty = HSLToRGB(app.state.selectedHue,0 ,lightness); 
-			mid =  HSLToRGB(app.state.selectedHue,50 ,lightness); 
-			full = HSLToRGB(app.state.selectedHue,100,lightness);
+			empty = ClicColorLib.ColorMethods.HSLToRGB(app.state.selectedHue,0 ,lightness); 
+			mid =  ClicColorLib.ColorMethods.HSLToRGB(app.state.selectedHue,50 ,lightness); 
+			full = ClicColorLib.ColorMethods.HSLToRGB(app.state.selectedHue,100,lightness);
 
 			var gradients = [
 				{percent:0,color:full},
@@ -304,7 +304,7 @@
 				{percent:100,color:empty}
 			];
 
-			ApplyGradientBackground(app.ui.lightnessLines[i],90,gradients)
+			ClicColorLib.ColorMethods.ApplyGradientBackground(app.ui.lightnessLines[i],90,gradients)
 		}	
 	}
 })( jQuery );

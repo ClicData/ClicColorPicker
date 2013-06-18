@@ -8,7 +8,7 @@
         init : init
     }
   
-  	$.fn.ClicGradientPicker = ClicUiLib.createJqueryObject(_controlName, methods);  
+  	$.fn.ClicGradientPicker = ClicColorLib.Ui.createJqueryObject(_controlName, methods);  
 
 	/*
 		Define methods
@@ -26,7 +26,7 @@
 	        }
 			
 			// this merges pased options with default values
-			settings = ClicUiLib.getSettings(settings, options);
+			settings = ClicColorLib.Ui.getSettings(settings, options);
 			var startState =  {
     			settings:settings,
        			state: {
@@ -44,7 +44,7 @@
 				}
    			}
 
-			ClicUiLib.initControl(
+			ClicColorLib.Ui.initControl(
 				_controlName,
 				renderControl,
 				startState,
@@ -56,7 +56,7 @@
     function getValue(options) {
 		var rv = [];
 		this.each(function () {
-        	var app = ClicUiLib.getAppData(_controlName, this);
+        	var app = ClicColorLib.Ui.getAppData(_controlName, this);
         	var val = {
         		isRadial: app.state.radial,
         		linearAngle: app.state.radial?undefined:app.state.linearAngle,
@@ -124,13 +124,13 @@
 	}
 
 	function drawRadioButtons(app, parent) {
-		var radLinRow = ClicUiLib.addControl(
+		var radLinRow = ClicColorLib.Ui.addControl(
 			"div",
 			parent, 
 			{"class":"row"}
 		);
 
-		var radLinLabel = ClicUiLib.addControl(
+		var radLinLabel = ClicColorLib.Ui.addControl(
 			"label",
 			radLinRow, 
 			{},
@@ -158,13 +158,13 @@
 	}
 
 	function drawAngleSelector(app, parent) {
-		app.ui.angleRow = ClicUiLib.addControl(
+		app.ui.angleRow = ClicColorLib.Ui.addControl(
 			"div",
 			parent, 
 			{"class":"row"}
 		);
 
-		var angleLabel = ClicUiLib.addControl(
+		var angleLabel = ClicColorLib.Ui.addControl(
 			"label",
 			app.ui.angleRow, 
 			{},
@@ -186,13 +186,13 @@
 
 	function drawPresetPicker(app, parent) {
 		// presets 
-		var presetRow = ClicUiLib.addControl(
+		var presetRow = ClicColorLib.Ui.addControl(
 			"div",
 			parent, 
 			{"class":"row"}
 		);
 
-		var presetLabel = ClicUiLib.addControl(
+		var presetLabel = ClicColorLib.Ui.addControl(
 			"label",
 			presetRow,
 			{},
@@ -208,7 +208,7 @@
 	}
 
 	function drawForm(app) {
-		var parent = ClicUiLib.addControl(
+		var parent = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.gradientPicker, 
 			{"class":"gradForm"}
@@ -221,13 +221,13 @@
 
 	function drawRadioButton(parent, text) {
 		var randId = CreateRandomId();
-		var rv = ClicUiLib.addControl(
+		var rv = ClicColorLib.Ui.addControl(
 			"input",
 			parent, 
 			{"id":randId,"name":"radlin","type":"radio"}
 		);
 
-		var lbl = ClicUiLib.addControl(
+		var lbl = ClicColorLib.Ui.addControl(
 			"label",
 			parent, 
 			{"for":randId},
@@ -238,13 +238,13 @@
 	}
 
 	function drawGradientPicker(app) {
-		app.ui.gradientPicker = ClicUiLib.addControl(
+		app.ui.gradientPicker = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.mainPanel
 		);
 		drawGradientSlider(app);
 		drawForm(app);
-		ClicUiLib.drawCommandRow(app, app.ui.gradientPicker);
+		ClicColorLib.Ui.drawCommandRow(app, app.ui.gradientPicker);
 	}
 
 	
