@@ -194,6 +194,35 @@ ClicColorLib.ColorMethods.ObjectToRGBString = function (obj) {
 	return rv;	
 }
 
+ClicColorLib.ColorMethods.ApproximateGradientPoint = function (existing, percent) {
+	var rgb = {r:255,g:255,b:255,a:1};
+	var clean = ClicColorLib.ColorMethods._cleanupColorStopArray(existing);
+	for (var i = 0; i < clean.length;i++) {
+		if (clean[i].percent > percent) {
+			var prev = clean[i-1].color;
+			var next = clean[i].color;
+			var relativePercent = Math.abs(clean[i-1].percent - clean[i].percent) * percent/100;
+			rgb.r = ClicColorLib.ColorMethods._colorDistance(prev.r, next.r, relativePercent);
+			rgb.g = ClicColorLib.ColorMethods._colorDistance(prev.g, next.g, relativePercent);
+			rgb.b = ClicColorLib.ColorMethods._colorDistance(prev.b, next.b, relativePercent);
+			if (prev.a === undefined) {prev.a = 1;}
+			if (next.a === undefined) {next.a = 1;}
+			rgb.a = ClicColorLib.ColorMethods._colorDistance(prev.a, next.a, relativePercent);
+			return rgb;
+		}
+	}
+}
+
+ClicColorLib.ColorMethods._colorDistance = function (a, b, percent) {
+	if (a < b) {
+		return a + ((b-a) * (percent/100));
+	} else if (b < a) {
+		return b + ((a-b) * (percent/100));
+	} else {
+		return a;
+	}
+}
+
 
 /*
 //

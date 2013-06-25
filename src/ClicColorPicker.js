@@ -104,6 +104,7 @@
 		app.ui.mainPanel.hide();
 
 		if (app.settings.type == 'gradient') { 
+			app.ui.mainPanel.css('height','370px');
 			app.ui.mainPanel.ClicGradientPicker({
 				enableOpacity:app.settings.enableOpacity,
 				'applyClick':function () {

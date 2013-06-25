@@ -19,7 +19,7 @@
 
 .textRow {
 	width: 100%;
-	height:40px;
+	height:25px;
 }
 
 .commandRow .button {
@@ -34,13 +34,14 @@
 
 .presetPicker {
 	border: 1px solid #c4c4c4;
-	width: 229px;
+	width: 177px;
 	overflow-y: scroll;
 	overflow-x: hidden;
 }
 
 .presetOption {
-	width:32px; height:32px;	
+	width:38px;
+	height:38px;	
 	float:left;
 	border: 1px solid #c4c4c4;
 	cursor: pointer;
@@ -48,7 +49,7 @@
 
 
 .sampleAreas {	
-	width:227px;
+	width:177px;
 	height:227px;
 	overflow: hidden;
 	margin: 0px 10px 0px 10px;
@@ -69,36 +70,39 @@
 	border-left: 0px;
 	border-right: 1px solid #9d9d9d;
 
-	width: 165px;
-	height: 42px;
+	width: 150px;
+	height: 27px;
 	
 	padding:0px;
 	position: relative;
-	top: -42;
-	left: 62;
-	
+	top: -28;
+	left: 26;
+	font-size: .8em;
 }
 
 .colorTBPreview {
 	display: inline-block;
-	width: 60px;
-	height: 40px;
+	width: 25px;
+	height: 25px;
 	border: 1px solid #9d9d9d;	
 	position: relative;
-	left: -61px;
+	left: -26px;
+	top:-1px;
 }
 
 .colorTBParent {
 	margin: 0px 10px 0px 10px;
-	max-height: 40px;
+	max-height: 25px;
 	border-left: 1px solid #9d9d9d;	
 }
 
 .colorTBBackground {
 	background: url(images/transparent.png) repeat;	
 	display: inline-block;
-	width: 60px;
-	height: 40px;
+	width: 25px;
+	height: 25px;
+	position: relative;
+	top:-2px;
 }
 
 .smallPreview
@@ -124,7 +128,7 @@
 
 .mainPanel
 {
-	width:250;
+	width:198;
 	height:350;
 	position: absolute;
 	background-color: #fcfcfc;
@@ -209,12 +213,12 @@ margin-left: 10px;
 }
 
 .lightnessLine {
-	width:227px;
+	width:175px;
 	height: 2px;		
 }
 
 .satAndLightnessArea {
-	margin-right: 13px;
+	margin-right: 11px;
 	margin-left: 10px;
 	height:200px;
 	border: 1px solid 9d9d9d;
@@ -226,7 +230,7 @@ margin-left: 10px;
 .gradSlider {
 	cursor: pointer;
 	height: 30px;
-	width: 227px;
+	width: 175px;
 	margin: 0px 10px 10px 10px;
 	background: red;
 }
@@ -238,6 +242,10 @@ margin-left: 10px;
 	background: url(images/handle.png) repeat;
 	position: absolute;
 	top:30px;	
+}
+
+.gradSliderHandle.selectedHandle {
+	background: url(images/selectedHandle.png) repeat;
 }
 
 .gradForm {
@@ -274,7 +282,7 @@ margin-left: 10px;
 	cursor:pointer;
 	position: relative;
 	left:10px;
-	width: 228px;
+	width: 176px;
 }
 
 .button  {
@@ -285,7 +293,7 @@ margin-left: 10px;
 
 -webkit-tap-highlight-color: transparent;
 
-  padding: 0 12px;
+  padding: 0 6px;
     
   border: 1px solid;
   border-top-color: #9d9d9d; border-bottom-color: #939393;
@@ -419,7 +427,7 @@ body.TOUCH,
 	background: transparent;
 }
 .noUiSlider.horizontal {
-	width: 225px;
+	width: 173px;
 	height: 10px;
 }
 .noUiSlider.horizontal div {
@@ -433,6 +441,102 @@ body.TOUCH,
 	margin: -9px 0 0 -5px;
 }
 
+/* toggle button */
+.toggle-slide {
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  direction: ltr;
+}
+.toggle-slide .toggle-on,.toggle-slide .toggle-off,.toggle-slide .toggle-blob {
+    float: left;
+}
+.toggle-slide .toggle-blob {
+    position: relative;
+    z-index: 99;
+    cursor: hand;
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+.toggle-light .toggle-slide {
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px #999;
+}
+.toggle-light .toggle-slide .toggle-on,.toggle-light .toggle-slide .toggle-off,.toggle-light .toggle-slide .toggle-blob {
+  font-size: 11px;
+  font-weight: 500;
+}
+.toggle-light .toggle-slide .toggle-on, .toggle-light .toggle-select .toggle-inner .active {
+  background: rgb(69,163,31);
+  box-shadow: inset 2px 2px 6px rgba(0,0,0,0.2);
+  text-shadow: 1px 1px rgba(0,0,0,0.2);
+  color: rgba(255,255,255, 0.8);
+}
+.toggle-light .toggle-slide .toggle-off, .toggle-light .toggle-select .toggle-on {
+  color: rgba(0,0,0,0.6);
+  text-shadow: 0 1px rgba(255,255,255,0.2);
+  background: #cfcfcf;
+  background: -moz-linear-gradient(top,  #cfcfcf 0%, #f5f5f5 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cfcfcf), color-stop(100%,#f5f5f5));
+  background: -webkit-linear-gradient(top,  #cfcfcf 0%,#f5f5f5 100%);
+  background: -o-linear-gradient(top,  #cfcfcf 0%,#f5f5f5 100%);
+  background: -ms-linear-gradient(top,  #cfcfcf 0%,#f5f5f5 100%);
+  background: linear-gradient(to bottom,  #cfcfcf 0%,#f5f5f5 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cfcfcf', endColorstr='#f5f5f5',GradientType=0 );
+}
+.toggle-light .toggle-slide .toggle-blob {
+  border-radius: 50px;
+  background: #cfcfcf;
+  background: -moz-linear-gradient(bottom,  #cfcfcf 0%, #f5f5f5 100%);
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#cfcfcf), color-stop(100%,#f5f5f5));
+  background: -webkit-linear-gradient(bottom,  #cfcfcf 0%,#f5f5f5 100%);
+  background: -o-linear-gradient(bottom,  #cfcfcf 0%,#f5f5f5 100%);
+  background: -ms-linear-gradient(bottom,  #cfcfcf 0%,#f5f5f5 100%);
+  background: linear-gradient(to top,  #cfcfcf 0%,#f5f5f5 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cfcfcf', endColorstr='#f5f5f5',GradientType=0 );
+
+  box-shadow: 1px 1px 2px #888;
+}
+.toggle-light .toggle-slide .toggle-blob:hover {
+  background: #e4e4e4;
+  background: -moz-linear-gradient(top,  #e4e4e4 0%, #f9f9f9 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e4e4e4), color-stop(100%,#f9f9f9));
+  background: -webkit-linear-gradient(top,  #e4e4e4 0%,#f9f9f9 100%);
+  background: -o-linear-gradient(top,  #e4e4e4 0%,#f9f9f9 100%);
+  background: -ms-linear-gradient(top,  #e4e4e4 0%,#f9f9f9 100%);
+  background: linear-gradient(to bottom,  #e4e4e4 0%,#f9f9f9 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e4e4e4', endColorstr='#f9f9f9',GradientType=0 );
+}
+
+.toggle-slide {
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  direction: ltr;
+}
+.toggle-slide .toggle-on,.toggle-slide .toggle-off,.toggle-slide .toggle-blob {
+  float: left;
+}
+.toggle-slide .toggle-blob {
+  position: relative;
+  z-index: 99;
+  cursor: hand;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
 
 
 /* angle picker */

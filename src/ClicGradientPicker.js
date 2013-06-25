@@ -21,7 +21,9 @@
 	            cancelClick:null,
 	            translations: {
 	            	apply:"Apply",
-	            	cancel:"Cancel"
+	            	cancel:"Cancel",
+	            	radial:"Radial",
+	            	linear:"Linear"
 	            }
 	        }
 			
@@ -37,10 +39,9 @@
 					mainPanel:$(this),
 					gradientPicker:null,
 					gradientSlider:null,
-					linField:null,
-					radField:null,
 					anglePicker:null,
-					angleRow:null
+					angleRow:null,
+					colorPicker:null
 				}
    			}
 
@@ -78,52 +79,44 @@
 
 	function drawGradientSlider(app) {
 		app.ui.gradientSlider = $('<div></div>').ClicGradientSlider({
-			requestingColor: function (callback,oldColor,showDelete) {SliderRequestsColor(callback,app,oldColor,showDelete);}
+			requestingColor: function (callback,previewCallback, oldColor,showDelete) {SliderRequestsColor(callback,previewCallback,app,oldColor,showDelete);}
 		});	
 
-		app.ui.gradientSlider.appendTo(app.ui.gradientPicker);
+		app.ui.gradientSlider.appendTo(app.ui.mainPanel);
 	}
 
-	function SliderRequestsColor(callback,app,oldColor,showDelete) {
-		var colorPicker = $("<div />").ClicFullPicker({
+	function SliderRequestsColor(callback, previewCallback, app,oldColor,showDelete) {
+		if (app.ui.colorPicker) {app.ui.colorPicker.remove();}
+		app.ui.colorPicker = $("<div />").ClicFullPicker({
 			enableOpacity:app.settings.enableOpacity,
 			startColor:oldColor,
 			showDelete:showDelete,
 			deleteClick: function (e) {
 				callback("delete");
-				colorPicker.remove();
+				app.ui.colorPicker.remove();
 				app.ui.gradientPicker.show();
 			},
 			applyClick: function (e) {
-				var value = colorPicker.ClicFullPicker('getColor');
+				var value = app.ui.colorPicker.ClicFullPicker('getColor');
 				callback(value);
-				colorPicker.remove();
+				app.ui.colorPicker.remove();
 				app.ui.gradientPicker.show();
 			},
 			cancelClick: function () {
-				colorPicker.remove();
+				callback("cancel");
+				app.ui.colorPicker.remove();
 				app.ui.gradientPicker.show();
+			},
+			previewChanged: function (rgb) {
+				if (previewCallback) {previewCallback(rgb);}
 			}
 		});
 		
 		app.ui.gradientPicker.hide();
-		colorPicker.appendTo(app.ui.mainPanel);
+		app.ui.colorPicker.appendTo(app.ui.mainPanel);
 	} 	
 
-	// we need ids for some elements, yet we want to allow multiple controls per page without id conflicts
-	function CreateRandomId()
-	{
-	    var text = "";
-	    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-	    for( var i=0; i < 5; i++ ) {
-			text += possible.charAt(Math.floor(Math.random() * possible.length));
-	    }	        
-
-	    return text;
-	}
-
-	function drawRadioButtons(app, parent) {
+	function drawToggleButton(app, parent) {
 		var radLinRow = ClicColorLib.Ui.addControl(
 			"div",
 			parent, 
@@ -136,25 +129,27 @@
 			{},
 			"Type"
 		);
-		 
-		app.ui.radField = drawRadioButton(radLinRow, "Radial");
-		app.ui.radField.click(function () {
-			if($(this).is(':checked')) {
-				app.state.radial = true;
-				UpdateUI(app);
-			}
-		});
-		
-		
-		randId = CreateRandomId();
 
-		app.ui.linField = drawRadioButton(radLinRow, "Linear"); 
-		app.ui.linField.click(function () {
-			if($(this).is(':checked')) {
-				app.state.radial = false;
-				UpdateUI(app);
-			}
+		var toggleRow = ClicColorLib.Ui.addControl(
+			"div",
+			parent, 
+			{"class":"row"}
+		);
+		 
+		var radLinToggle = $('<div class="toggle-light" />').toggles({
+			text: {on:app.settings.translations.radial,off:app.settings.translations.linear},
+			on:app.state.radial,
+			width:65,
+			type:'select'
 		});
+
+
+		radLinToggle.on('toggle', function (e, active) {
+			app.state.radial = active;
+			UpdateUI(app);
+		});
+
+		radLinToggle.appendTo(toggleRow);
 	}
 
 	function drawAngleSelector(app, parent) {
@@ -171,17 +166,18 @@
 			"Angle"
 		);
 
-		 $("<label>Angle</label>");
-		app.ui.anglePicker = $("<div />").anglepicker({
-			clockwise: false,
-			change: function(e, ui) {
-				$('#val').text(ui.value);
-				app.state.linearAngle = (ui.value + 90) % 360;
-			},
-			value: 0
-		});
-		
-		app.ui.anglePicker.appendTo(app.ui.angleRow);
+		app.ui.anglePicker = $("<div class='noUiSlider' />").noUiSlider({
+			range: [0, 360]
+			,start: 0
+		   	,step: 1
+		   	,handles:1
+		   	,slide: function(){
+		   		app.state.linearAngle = ($(this).val() + 90) % 360;
+		    	UpdateUI(app);
+		   	}
+		});	
+		app.ui.anglePicker.css('margin-left', '3px');
+		app.ui.anglePicker.appendTo(parent);
 	}
 
 	function drawPresetPicker(app, parent) {
@@ -214,35 +210,18 @@
 			{"class":"gradForm"}
 		);
 		
-		drawRadioButtons(app, parent);
+		drawToggleButton(app, parent);
 		drawAngleSelector(app, parent);
 		drawPresetPicker(app, parent);
 	}
 
-	function drawRadioButton(parent, text) {
-		var randId = CreateRandomId();
-		var rv = ClicColorLib.Ui.addControl(
-			"input",
-			parent, 
-			{"id":randId,"name":"radlin","type":"radio"}
-		);
-
-		var lbl = ClicColorLib.Ui.addControl(
-			"label",
-			parent, 
-			{"for":randId},
-			text
-		);
-
-		return rv;
-	}
-
 	function drawGradientPicker(app) {
+		drawGradientSlider(app);
 		app.ui.gradientPicker = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.mainPanel
 		);
-		drawGradientSlider(app);
+
 		drawForm(app);
 		ClicColorLib.Ui.drawCommandRow(app, app.ui.gradientPicker);
 	}
@@ -252,12 +231,12 @@
 	function UpdateUI(app) {
 		if (app.state.radial) {
 			app.ui.angleRow.hide();
-			app.ui.presetControl.height(210);
-			app.ui.radField.prop("checked", true)
+			app.ui.anglePicker.hide();
+			app.ui.presetControl.height(198);
 		} else {
 			app.ui.angleRow.show();
+			app.ui.anglePicker.show();
 			app.ui.presetControl.height(149);
-			app.ui.linField.prop("checked", true)
 		}
 	}
 })( jQuery );

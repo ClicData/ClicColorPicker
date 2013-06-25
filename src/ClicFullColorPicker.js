@@ -24,6 +24,7 @@
 	            deleteClick:null,
 	            applyClick:null,
 	            cancelClick:null,
+	            previewChanged:null,
 	            translations: {
 	            	apply:"Apply",
 	            	cancel:"Cancel",
@@ -235,27 +236,12 @@
 		app.ui.hueSlider.appendTo(sliderContainer);
 	}
 
-	function drawDeleteButton(app) {
-		var delBtn = ClicColorLib.Ui.addControl(
-			"input",
-			app.ui.fullPicker, 
-			{"class":"delete","type":"button"}
-		);
-
-		delBtn.val(app.settings.translations.del);
-		delBtn.click(function() {
-			if (app.settings.deleteClick) {app.settings.deleteClick();}
-		});
-	}
-
 	function drawFullPicker(app) {
 		app.ui.fullPicker = ClicColorLib.Ui.addControl(
 			"div",
 			app.ui.mainPanel
 		);
-		if (app.settings.showDelete) {
-			drawDeleteButton(app);
-		}
+		
 		drawTextInput(app);
 		drawPicker(app)
 		ClicColorLib.Ui.drawCommandRow(app, app.ui.fullPicker);
@@ -265,7 +251,9 @@
 	//methods
 	function UpdateUI(app) {
 		var rgb = getSelectedColor(app);
-		app.ui.colorTextBox.ColorTextBox('setValue',rgb);		
+		app.ui.colorTextBox.ColorTextBox('setValue',rgb);
+		
+		if (app.settings.previewChanged) {app.settings.previewChanged(rgb);}
 
 		app.ui.hueSlider.val(app.state.selectedHue);
 		if (app.ui.opacitySlider) {
