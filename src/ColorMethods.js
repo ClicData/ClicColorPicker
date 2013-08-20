@@ -13,19 +13,19 @@ ClicColorLib.ColorMethods._rgbaRegex = /^rgba\(\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d
 
 ClicColorLib.ColorMethods.isColor = function (str) {
 	return (ClicColorLib.ColorMethods.isHex(str) || ClicColorLib.ColorMethods.isRGB(str) || ClicColorLib.ColorMethods.isRGBA(str));
-}
+};
 
 ClicColorLib.ColorMethods.isHex = function (str) {	
 	return str.match(ClicColorLib.ColorMethods._hexRegex);	
-}
+};
 
 ClicColorLib.ColorMethods.isRGB = function (str) {
 	return str.match(ClicColorLib.ColorMethods._rgbRegex);
-}
+};
 
 ClicColorLib.ColorMethods.isRGBA = function (str) {
 	return str.match(ClicColorLib.ColorMethods._rgbaRegex);
-}
+};
 
 
 
@@ -41,7 +41,7 @@ ClicColorLib.ColorMethods.StringToObject = function (str) {
 	} else {
 		return ClicColorLib.ColorMethods.ParseRGB(str);
 	}	
-}
+};
 
 ClicColorLib.ColorMethods.ParseHex = function (str) {
 	try {
@@ -53,7 +53,7 @@ ClicColorLib.ColorMethods.ParseHex = function (str) {
 	} catch (e) {
 		console.log('Error parsing hex string: ' + str)
 	}
-}
+};
 
 ClicColorLib.ColorMethods.ParseRGB = function (str) {
 	try {		
@@ -88,7 +88,7 @@ ClicColorLib.ColorMethods.ParseRGB = function (str) {
 	} catch (e) {
 		console.log('Error parsing rgb:' + str);
 	}
-}
+};
 
 ClicColorLib.ColorMethods.CloneColor = function (obj) {
 	return  {
@@ -97,7 +97,7 @@ ClicColorLib.ColorMethods.CloneColor = function (obj) {
 		b:obj.b,
 		a:obj.a
 	};
-}
+};
 
 /* 
 //
@@ -133,7 +133,7 @@ ClicColorLib.ColorMethods.HSLToRGB = function (h, s, l){
     }
 
     return {r: Math.round(r * 255), g:Math.round(g * 255), b:Math.round(b * 255),a:1};
-}
+};
 
 ClicColorLib.ColorMethods.RGBToHSL = function (rgb){
     var r = rgb.r / 255;
@@ -183,7 +183,7 @@ ClicColorLib.ColorMethods.ObjectToRGBAString = function (obj) {
 	rv += ")";
 	
 	return rv;	
-}
+};
 
 ClicColorLib.ColorMethods.ObjectToRGBString = function (obj) {
 	var rv = "rgb(" + obj.r.toString(10);
@@ -192,6 +192,35 @@ ClicColorLib.ColorMethods.ObjectToRGBString = function (obj) {
 	rv += ")";
 	
 	return rv;	
+};
+
+ClicColorLib.ColorMethods.ApproximateGradientPoint = function (existing, percent) {
+	var rgb = {r:255,g:255,b:255,a:1};
+	var clean = ClicColorLib.ColorMethods._cleanupColorStopArray(existing);
+	for (var i = 0; i < clean.length;i++) {
+		if (clean[i].percent > percent) {
+			var prev = clean[i-1].color;
+			var next = clean[i].color;
+			var relativePercent = Math.abs(clean[i-1].percent - clean[i].percent) * percent/100;
+			rgb.r = ClicColorLib.ColorMethods._colorDistance(prev.r, next.r, relativePercent);
+			rgb.g = ClicColorLib.ColorMethods._colorDistance(prev.g, next.g, relativePercent);
+			rgb.b = ClicColorLib.ColorMethods._colorDistance(prev.b, next.b, relativePercent);
+			if (prev.a === undefined) {prev.a = 1;}
+			if (next.a === undefined) {next.a = 1;}
+			rgb.a = ClicColorLib.ColorMethods._colorDistance(prev.a, next.a, relativePercent);
+			return rgb;
+		}
+	}
+}
+
+ClicColorLib.ColorMethods._colorDistance = function (a, b, percent) {
+	if (a < b) {
+		return a + ((b-a) * (percent/100));
+	} else if (b < a) {
+		return b + ((a-b) * (percent/100));
+	} else {
+		return a;
+	}
 }
 
 
@@ -235,7 +264,7 @@ ClicColorLib.ColorMethods.GetLinearGradientCss = function (angle,stops,isRadial)
 	
 
 	return rv;
-}
+};
 
 ClicColorLib.ColorMethods.ApplyGradientBackground = function (obj,angle,stops,isRadial) {
 	if (!angle) { angle = 0;}
@@ -246,7 +275,7 @@ ClicColorLib.ColorMethods.ApplyGradientBackground = function (obj,angle,stops,is
 		obj.css("background",strs[i] + ", url('images/transparent.png') repeat");
 	}
 
-}
+};
 
 
 ClicColorLib.ColorMethods._cleanupColorStopArray = function (arr) {
@@ -257,4 +286,4 @@ ClicColorLib.ColorMethods._cleanupColorStopArray = function (arr) {
 	}).sort(function (a,b) {
 			return a.percent - b.percent	
 	});
-}
+};

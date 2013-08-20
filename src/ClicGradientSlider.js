@@ -32,6 +32,7 @@
 					state: {
 						colorStops: settings.startColorStops
 				},
+				state: {callbackWaiting:null},
 				ui: {
 					parent: $(this),
 					gradientSlider:null
@@ -94,6 +95,7 @@
     			var howFarFromLeft = clickLeft - parentLeft;
 				var width = $(this).parent().width();
 				var percent = (howFarFromLeft / width) * 100;
+				percent += 3;
 				NewHandle(app, percent);	
 			}
 		});
@@ -116,7 +118,7 @@
 			app.ui.gradientSlider, 
 			{"class":"gradSliderHandle","title":"Click to modify or delete the gradient stop"}
 		);
-		zero.css('left','5');
+		zero.css('left','5px');
 		zero.data('colorStopIndex', 0);
 		zero.click(function (e) {HandleClick(app,$(this),false)});
 		// last stop
@@ -125,7 +127,7 @@
 			app.ui.gradientSlider, 
 			{"class":"gradSliderHandle","title":"Click to modify or delete the gradient stop"}
 		);
-		hundred.css('left','230');
+		hundred.css('left','178px');
 		hundred.data('colorStopIndex',  app.state.colorStops.length-1);
 		hundred.click(function (e) {HandleClick(app,$(this),false)});
 	}
@@ -165,32 +167,59 @@
 			},
 			stop: function () { setTimeout(function() {$(this).removeClass('noclick')},1);}
 		});
+
+		return newb;
 	}
 
-	function NewHandle(app, percent) {		
-		app.settings.requestingColor(function (color) {
-			// create new stop
-			var newStop = {percent:percent ,color:color}
-			renderNewStop(newStop,app);
-			UpdateUI(app);
-		},null,false);
+	function NewHandle(app, percent) {
+		// create new stop
+		var color = ClicColorLib.ColorMethods.ApproximateGradientPoint(app.state.colorStops, percent);
+		var tempStop = {percent:percent, color:color}
+		var newb = renderNewStop(tempStop,app);
+		HandleClick(app, newb, false, true);
 	}
 
-	function HandleClick(app, handle,showDelete) {
+	function HandleClick(app, handle,showDelete, isNew) {
 		if (app.settings.requestingColor) {
+			handle.addClass("selectedHandle");
+
 			var stopIndex = handle.data('colorStopIndex');
-			app.settings.requestingColor(
-				function (value) {
-					if (value.toString() === "delete") {
+			var oldColor = app.state.colorStops[stopIndex].color;
+
+			// they clicked on a different handle, cancel that operation
+			if (app.state.callbackWaiting) {app.state.callbackWaiting("cancel");}
+			app.state.callbackWaiting = function (value) {
+				if (value.toString() === "delete") {
+					handle.remove();
+					app.state.colorStops[stopIndex] = null;
+				} else if (value.toString() === "cancel") {
+					if (isNew) {
 						handle.remove();
 						app.state.colorStops[stopIndex] = null;
 					} else {
-						app.state.colorStops[stopIndex].color = value;	
+						handle.removeClass("selectedHandle");
+						app.state.colorStops[stopIndex].color = oldColor;
 					}
-					
+				} else {
+					handle.removeClass("selectedHandle");
+					app.state.colorStops[stopIndex].color = value;
+				}
+				
+				UpdateUI(app);
+				app.state.callbackWaiting = null;
+			}
+
+			var previewCallback = function (rgb) {
+				if (oldColor != rgb) {
+					app.state.colorStops[stopIndex].color = rgb;
 					UpdateUI(app);
-				},
-				app.state.colorStops[stopIndex].color,
+				}
+			}
+
+			app.settings.requestingColor(
+				app.state.callbackWaiting,
+				previewCallback,
+				oldColor,
 				showDelete
 			);
 		}

@@ -81,6 +81,19 @@ ClicColorLib.Ui.drawCommandRow = function (app, parent) {
 		}
 	});
 
+	if (app.settings.showDelete) {
+		var delBtn = ClicColorLib.Ui.addControl(
+			"input",
+			commandRow, 
+			{"class":"button","type":"button"}
+		);
+
+		delBtn.val(app.settings.translations.del);
+		delBtn.click(function() {
+			if (app.settings.deleteClick) {app.settings.deleteClick();}
+		});
+	}
+
 	var cancel = ClicColorLib.Ui.addControl(
 		"input",
 		commandRow, 

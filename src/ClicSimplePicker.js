@@ -150,12 +150,10 @@
 
 			for (var j=0;j < palette.values.length;j++) {
 				var sample = ClicColorLib.Ui.addControl(
-					"span",
+					"div",
 					sampleArea, 
 					{"class":"sample"}
 				);
-
-				 $('<span class="sample"></span>');
 				sample.data('color',palette.values[j]);
 				sample.css('background-color',palette.values[j]);
 

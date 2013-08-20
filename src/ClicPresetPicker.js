@@ -48,7 +48,6 @@
 
 	function renderControl(element,app) {
 		drawPresetPicker(app);
-		UpdateUI(app);
 	}
 
 
@@ -66,7 +65,8 @@
 			option.click(function () {
 				app.state.selectedPresetIndex = $(this).data('index');
 				if (app.settings.onChange) {
-					app.settings.onChange({selected:app.settings.options[app.state.selectedPresetIndex]});
+					var cloned = clone(app.settings.options[app.state.selectedPresetIndex]);
+					app.settings.onChange({selected:cloned});
 				}
 			});
 
@@ -74,9 +74,8 @@
 		}
 	}
 
-	
-	//methods
-	function UpdateUI(app) {
-		
+	// http://stackoverflow.com/a/3774429
+	function clone(obj) {
+		return JSON.parse(JSON.stringify(obj));
 	}
 })( jQuery );
