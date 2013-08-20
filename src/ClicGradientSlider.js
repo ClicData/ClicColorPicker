@@ -128,6 +128,7 @@
 			{"class":"gradSliderHandle","title":"Click to modify or delete the gradient stop"}
 		);
 		hundred.css('left','178px');
+
 		hundred.data('colorStopIndex',  app.state.colorStops.length-1);
 		hundred.click(function (e) {HandleClick(app,$(this),false)});
 	}

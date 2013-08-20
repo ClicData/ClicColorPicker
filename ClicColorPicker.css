@@ -70,7 +70,6 @@
 	border-left: 0px;
 	border-right: 1px solid #9d9d9d;
 
-
 	width: 149px;
 	height: 25px;
 	
@@ -79,12 +78,13 @@
 	top: -32px;
 	left: 26px;
 	font-size: .8em;
-
 }
 
 .sliderParent {
 	margin-top: 10px;
 	margin-left: 10px;
+	width: 150px;
+	height: 27px;
 }
 
 .colorTBPreview {
@@ -135,9 +135,8 @@
 
 .mainPanel
 {
-	width:198px;
-	height:350px;
-	
+	width:198;
+	height:350;
 	position: absolute;
 	background-color: #fcfcfc;
 	border:1px solid #9d9d9d;
