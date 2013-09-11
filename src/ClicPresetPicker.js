@@ -17,6 +17,7 @@
 	function init(options) {
 		return this.each(function () {
 			var settings =  {
+				imagePath:null,
 	            onChange:null,
 	            options:ClicColorLib.Data.gradientPresets
 	        }
@@ -70,7 +71,7 @@
 				}
 			});
 
-			ClicColorLib.ColorMethods.ApplyGradientBackground(option,45,app.settings.options[i],false);
+			ClicColorLib.ColorMethods.ApplyGradientBackground(option,45,app.settings.options[i],false,app.settings.imagePath + '/transparent.png');
 		}
 	}
 

@@ -25,6 +25,7 @@
 	            applyClick:null,
 	            cancelClick:null,
 	            previewChanged:null,
+	            imagePath:'images',
 	            translations: {
 	            	apply:"Apply",
 	            	cancel:"Cancel",
@@ -162,7 +163,7 @@
 			}
 		});
 
-		app.ui.crosshair = $('<img src="images/crosshair.png" style="position:relative;" />');
+		app.ui.crosshair = $('<img src="' + app.settings.imagePath + '/crosshair.png" style="position:relative;" />');
 		app.ui.crosshair.appendTo(satAndLightness);
 		$(document).mouseup(function (e) {
 			app.state.mouseIsDown = false;
@@ -228,7 +229,7 @@
 		   	}
 		});		
 
-		ClicColorLib.ColorMethods.ApplyGradientBackground(app.ui.hueSlider,90,hueGradient)
+		ClicColorLib.ColorMethods.ApplyGradientBackground(app.ui.hueSlider,90,hueGradient,false, app.settings.imagePath + '/transparent.png')
 
 		var sliderContainer =ClicColorLib.Ui.addControl(
 			"div",
@@ -266,7 +267,7 @@
 			solid.a = 1;
 			transparent.a = 0
 
-			app.ui.opacitySlider.css('background',"linear-gradient(90deg," + ClicColorLib.ColorMethods.ObjectToRGBAString(transparent) + "," + ClicColorLib.ColorMethods.ObjectToRGBAString(solid) + ") , url('images/transparent.png') repeat");		
+			app.ui.opacitySlider.css('background',"linear-gradient(90deg," + ClicColorLib.ColorMethods.ObjectToRGBAString(transparent) + "," + ClicColorLib.ColorMethods.ObjectToRGBAString(solid) + ") , url('" + app.settings.imagePath + "/transparent.png') repeat");		
 		}
 		
 		var offset = 6;
@@ -294,7 +295,7 @@
 				{percent:100,color:empty}
 			];
 
-			ClicColorLib.ColorMethods.ApplyGradientBackground(app.ui.lightnessLines[i],90,gradients)
+			ClicColorLib.ColorMethods.ApplyGradientBackground(app.ui.lightnessLines[i],90, gradients,false,app.settings.imagePath + '/transparent.png')
 		}	
 	}
 })( jQuery );

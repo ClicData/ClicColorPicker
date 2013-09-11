@@ -51,13 +51,18 @@
 						$('#preview').css('background',ClicColorLib.ColorMethods.ObjectToRGBAString(e.newValue));
 					}
 				});
-				$('#full').ClicColorPicker({'startColor':"rgb(196, 16, 196)", 'type':'full',enableOpacity:true,
+				$('#full').ClicColorPicker({
+					'startColor':"rgb(196, 16, 196)",
+					 'type':'full',
+					 'enableOpacity':true,
+					 'imagePath':'images', 
 					'onChanged': function (e) {
 						$('#preview').css('background',ClicColorLib.ColorMethods.ObjectToRGBAString(e.newValue));
 					}});
 				$('#grad').ClicColorPicker({'type':'gradient',enableOpacity:true,
+					'imagePath':'images',
 					'onChanged': function (e) {
-						ClicColorLib.ColorMethods.ApplyGradientBackground($('#preview'),e.newValue.linearAngle, e.newValue.colorStops, e.newValue.isRadial);
+						alert(e.gradientCss)
 					}
 				});
 			});

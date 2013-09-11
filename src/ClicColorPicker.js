@@ -23,7 +23,8 @@
 		        defaultPalette:'websafe', // which palette is selected by defaul, only applies to simple mode
 		        openerCssClass:"", // css class for the element that opens the panel
 		        mainPanelCssClass:"",
-		        onChanged:null
+		        onChanged:null,
+		        imagePath:null
 		    }
 			
 			// this merges pased options with default values
@@ -106,6 +107,7 @@
 		if (app.settings.type == 'gradient') { 
 			app.ui.mainPanel.css('height','370px');
 			app.ui.mainPanel.ClicGradientPicker({
+				imagePath:app.settings.imagePath,
 				enableOpacity:app.settings.enableOpacity,
 				'applyClick':function () {
 					var val = app.ui.mainPanel.ClicGradientPicker('getValue');
@@ -132,6 +134,7 @@
 			app.ui.mainPanel.ClicFullPicker({
 				'startColor':app.state.selectedColor,
 				'enableOpacity':app.settings.enableOpacity,
+				'imagePath':app.settings.imagePath,
 				'applyClick':function () {
 					var color = app.ui.mainPanel.ClicFullPicker('getColor');
 					ApplyClicked(app,color);					
@@ -146,14 +149,18 @@
 	
 	function ApplyClicked(app, newvalue) {
 		app.state.mainPanelVisible = false;
+		var gradientCss = undefined;
 		if (app.settings.type == 'gradient') { 
 			app.state.selectedGradient = newvalue;
+
+			gradientCss = ClicColorLib.ColorMethods.GetGradientCss(newvalue.linearAngle, newvalue.colorStops, newvalue.isRadial);
 		} else {
 			app.state.selectedColor = newvalue;
 		}
 
 		if (app.settings.onChanged) {
 			var e = {
+				gradientCss:gradientCss,
 				oldValue:app.state.oldValue,				
 				newValue:newvalue
 			};
@@ -209,7 +216,8 @@
 				app.ui.previewArea,
 				app.state.selectedGradient.linearAngle,
 				app.state.selectedGradient.colorStops,
-				app.state.selectedGradient.isRadial				
+				app.state.selectedGradient.isRadial,
+				app.settings.imagePath + '/transparent.png'			
 			)			
 		} else {
 			app.ui.previewArea.css("background-color", ClicColorLib.ColorMethods.ObjectToRGBAString(app.state.selectedColor));
@@ -222,7 +230,7 @@
 		var pos = app.ui.opener.offset();
 
 		var top = pos.top + app.ui.opener.outerHeight();
-		var left = pos.width + app.ui.opener.outerWidth();
+		var left = pos.left;
 
 
 		app.ui.mainPanel.css('top',top);

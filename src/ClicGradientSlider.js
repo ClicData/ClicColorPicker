@@ -21,6 +21,7 @@
 		return this.each(function () {
 			var settings =  {
 				requestingColor:null,
+				imagePath:null,
 	        	startColorStops:[
 		        	{percent:0,color:{r:0,g:0,b:0,a:1}},
 		        	{percent:100,color:{r:255,g:255,b:255,a:1}}
@@ -228,7 +229,7 @@
 
 	//methods
 	function UpdateUI(app) {
-		ClicColorLib.ColorMethods.ApplyGradientBackground(app.ui.gradientSlider,90,app.state.colorStops);
+		ClicColorLib.ColorMethods.ApplyGradientBackground(app.ui.gradientSlider,90,app.state.colorStops,false,app.settings.imagePath + '/transparent.png');
 	}
 
 })( jQuery );

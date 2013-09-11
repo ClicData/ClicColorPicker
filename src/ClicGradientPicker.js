@@ -79,6 +79,7 @@
 
 	function drawGradientSlider(app) {
 		app.ui.gradientSlider = $('<div></div>').ClicGradientSlider({
+			imagePath:app.settings.imagePath,
 			requestingColor: function (callback,previewCallback, oldColor,showDelete) {SliderRequestsColor(callback,previewCallback,app,oldColor,showDelete);}
 		});	
 
@@ -88,6 +89,7 @@
 	function SliderRequestsColor(callback, previewCallback, app,oldColor,showDelete) {
 		if (app.ui.colorPicker) {app.ui.colorPicker.remove();}
 		app.ui.colorPicker = $("<div />").ClicFullPicker({
+			imagePath:app.settings.imagePath,
 			enableOpacity:app.settings.enableOpacity,
 			startColor:oldColor,
 			showDelete:showDelete,
@@ -196,7 +198,7 @@
 		);
 
 		 $("<label>Presets</label>");
-		app.ui.presetControl = $("<div class='presetPicker' />").ClicPresetPicker({onChange:function (e) {
+		app.ui.presetControl = $("<div class='presetPicker' />").ClicPresetPicker({imagePath:app.settings.imagePath,onChange:function (e) {
 			app.ui.gradientSlider.ClicGradientSlider("setValue",{colorStops:e.selected});
 		}});
 		

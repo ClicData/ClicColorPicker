@@ -261,10 +261,11 @@ ClicColorLib.ColorMethods._colorDistance = function (a, b, percent) {
 
 // takes something like this: [{percent:12,color:{rgb}},{}...]
 // and gives you something like this: ["-webkit-gradient(linear"],"...."]
-ClicColorLib.ColorMethods.GetLinearGradientCss = function (angle,stops,isRadial) {
+ClicColorLib.ColorMethods.GetGradientCss = function (angle,stops,isRadial) {
 	if (stops.length == 0) {
 		return [];
 	}
+	if (!angle) { angle = 0;}
 
 	var rv = new Array(4);
 	var list = "";
@@ -295,13 +296,13 @@ ClicColorLib.ColorMethods.GetLinearGradientCss = function (angle,stops,isRadial)
 	return rv;
 };
 
-ClicColorLib.ColorMethods.ApplyGradientBackground = function (obj,angle,stops,isRadial) {
+ClicColorLib.ColorMethods.ApplyGradientBackground = function (obj,angle,stops,isRadial, transparentImageBackgroundPath) {
 	if (!angle) { angle = 0;}
 	
 	var clean = ClicColorLib.ColorMethods._cleanupColorStopArray(stops);
-	var strs = ClicColorLib.ColorMethods.GetLinearGradientCss(angle,clean,isRadial);
+	var strs = ClicColorLib.ColorMethods.GetGradientCss(angle,clean,isRadial);
 	for (var i = 0; i < strs.length;i++) {
-		obj.css("background",strs[i] + ", url('images/transparent.png') repeat");
+		obj.css("background",strs[i] + ", url('" + transparentImageBackgroundPath + "') repeat");
 	}
 
 };
